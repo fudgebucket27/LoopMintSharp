@@ -17,6 +17,7 @@ var nftType = 0; //nfttype 0 = ERC1155, shouldn't need to change this unless you
 var creatorFeeBips = 0; //i wonder what setting to something other than 0 would do?
 var amount = 1; //leave this to one so you only mint 1
 var validUntil = 1700000000; //the examples seem to use this number
+var maxFeeTokenId = 0; //0 should be for ETH
 #endregion
 
 #region Get storage id, token address and offchain fee
@@ -94,15 +95,15 @@ var nftMintResponse = await loopringMintService.MintNft(
     minterAddress: minterAddress,
     toAccountId: accountId,
     toAddress: minterAddress,
-    nftType: 0,
+    nftType: nftType,
     tokenAddress: counterFactualNft.tokenAddress,
     nftId,
     amount: amount.ToString(),
     validUntil: validUntil,
     creatorFeeBips: creatorFeeBips,
     storageId.offchainId,
-    maxFeeTokenId: 0,
-    maxFeeAmount: offChainFee.fees[0].fee,
+    maxFeeTokenId: maxFeeTokenId,
+    maxFeeAmount: offChainFee.fees[maxFeeTokenId].fee,
     forceToMint: false,
     counterFactualNftInfo: counterFactualNftInfo,
     eddsaSignature: eddsaSignature
