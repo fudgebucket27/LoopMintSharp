@@ -7,38 +7,39 @@ using Multiformats.Hash;
 
 #region Initial Setup
 //Changes these variables to suit
-string apiKey = Environment.GetEnvironmentVariable("LOOPRINGAPIKEY", EnvironmentVariableTarget.Machine);//you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
+string loopringApiKey = Environment.GetEnvironmentVariable("LOOPRINGAPIKEY", EnvironmentVariableTarget.Machine);//you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 string loopringPrivateKey = Environment.GetEnvironmentVariable("LOOPRINGPRIVATEKEY", EnvironmentVariableTarget.Machine); //you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 var ipfsCid = "QmNhSqvvzQDy4GW8MUVH8hcDJPzHh22WSrW6Eu6DTUCmja"; //the ipfs cid of your metadata.json
-var exchange = "0x0BABA1Ad5bE3a5C0a66E7ac838a129Bf948f1eA4"; //shouldn't need to change this
-var minterAddress = "0x36Cd6b3b9329c04df55d55D41C257a5fdD387ACd"; //your address
-var accountId = 40940; //your account id
+var minterAddress = "0x36Cd6b3b9329c04df55d55D41C257a5fdD387ACd"; //your loopring address
+var accountId = 40940; //your loopring account id
 var nftType = 0; //nfttype 0 = ERC1155, shouldn't need to change this unless you want ERC721 which is 1
-var creatorFeeBips = 0; //i wonder what setting to something other than 0 would do?
+var creatorFeeBips = 0; //i wonder what setting this to something other than 0 would do?
 var amount = 1; //leave this to one so you only mint 1
 var validUntil = 1700000000; //the examples seem to use this number
-var maxFeeTokenId = 0; //0 should be for ETH
+var maxFeeTokenId = 0; //0 should be for ETH, 1 is for LRC?
+var nftFactory = "0xc852aC7aAe4b0f0a0Deb9e8A391ebA2047d80026"; //current nft factory of loopring, shouldn't need to change unless they deploye a new contract again, sigh...
+var exchange = "0x0BABA1Ad5bE3a5C0a66E7ac838a129Bf948f1eA4"; //loopring exchange address, shouldn't need to change this,
 #endregion
 
 #region Get storage id, token address and offchain fee
 ILoopringMintService loopringMintService = new LoopringMintService();
 
 //Getting the storage id
-var storageId = await loopringMintService.GetNextStorageId(apiKey, accountId, 0);
+var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, 0);
 Console.WriteLine($"Storage id: {JsonConvert.SerializeObject(storageId, Formatting.Indented)}");
 
 //Getting the token address
 CounterFactualNftInfo counterFactualNftInfo = new CounterFactualNftInfo
 {
     nftOwner = minterAddress,
-    nftFactory = "0xc852aC7aAe4b0f0a0Deb9e8A391ebA2047d80026",
-    nftBaseUri = ""
+    nftFactory = nftFactory,
+    nftBaseUri = "" //this aint used in the api as far as i can tell. for future use
 };
-var counterFactualNft = await loopringMintService.ComputeTokenAddress(apiKey, counterFactualNftInfo);
+var counterFactualNft = await loopringMintService.ComputeTokenAddress(loopringApiKey, counterFactualNftInfo);
 Console.WriteLine($"CounterFactualNFT Token Address: {JsonConvert.SerializeObject(counterFactualNft, Formatting.Indented)}");
 
 //Getting the offchain fee
-var offChainFee = await loopringMintService.GetOffChainFee(apiKey, 40940, 9, counterFactualNft.tokenAddress);
+var offChainFee = await loopringMintService.GetOffChainFee(loopringApiKey, 40940, 9, counterFactualNft.tokenAddress);
 Console.WriteLine($"Offchain fee: {JsonConvert.SerializeObject(offChainFee, Formatting.Indented)}");
 #endregion
 
@@ -89,7 +90,7 @@ string eddsaSignature = eddsa.Sign();
 
 #region Submit the nft mint
 var nftMintResponse = await loopringMintService.MintNft(
-    apiKey: apiKey,
+    apiKey: loopringApiKey,
     exchange: exchange,
     minterId: accountId,
     minterAddress: minterAddress,
