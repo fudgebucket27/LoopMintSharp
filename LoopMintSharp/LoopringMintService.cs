@@ -125,6 +125,10 @@ namespace LoopMintSharp
             {
                 var response = await _client.ExecutePostAsync(request);
                 var data = JsonConvert.DeserializeObject<MintResponseData>(response.Content!);
+                if(!response.IsSuccessful)
+                {
+                    Console.WriteLine($"Error minting nft: {response.Content}");
+                }    
                 return data;
             }
             catch (HttpRequestException httpException)
