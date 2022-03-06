@@ -40,7 +40,7 @@ namespace LoopMintSharp
 
         public async Task<CounterFactualNft> ComputeTokenAddress(string apiKey, CounterFactualNftInfo counterFactualNftInfo)
         {
-            var request = new RestRequest("/api/v3/nft/info/computeTokenAddress");
+            var request = new RestRequest("api/v3/nft/info/computeTokenAddress");
             request.AddHeader("x-api-key", apiKey);
             request.AddParameter("nftFactory", counterFactualNftInfo.nftFactory);
             request.AddParameter("nftOwner", counterFactualNftInfo.nftOwner);
@@ -53,7 +53,27 @@ namespace LoopMintSharp
             }
             catch (HttpRequestException httpException)
             {
-                Console.WriteLine($"Error getting storage id {httpException}");
+                Console.WriteLine($"Error getting storage id: {httpException}");
+                return null;
+            }
+        }
+
+        public async Task<OffchainFee> GetOffChainFee(string apiKey, int accountId, int requestType, string tokenAddress)
+        {
+            var request = new RestRequest("api/v3/user/nft/offchainFee");
+            request.AddHeader("x-api-key", apiKey);
+            request.AddParameter("accountId", accountId);
+            request.AddParameter("requestType", requestType);
+            request.AddParameter("tokenAddress", tokenAddress);
+            try
+            {
+                var response = await _client.GetAsync(request);
+                var data = JsonConvert.DeserializeObject<OffchainFee>(response.Content!);
+                return data;
+            }
+            catch (HttpRequestException httpException)
+            {
+                Console.WriteLine($"Error getting off chain fee: {httpException}");
                 return null;
             }
         }

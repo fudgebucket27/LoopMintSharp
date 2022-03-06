@@ -10,5 +10,6 @@ namespace LoopMintSharp
     {
         Task<StorageId> GetNextStorageId(string apiKey, int accountId, int sellTokenId);
         Task<CounterFactualNft> ComputeTokenAddress(string apiKey, CounterFactualNftInfo counterFactualNftInfo);
+        Task<OffchainFee> GetOffChainFee(string apiKey, int accountId, int requestType, string tokenAddress);
     }
 }

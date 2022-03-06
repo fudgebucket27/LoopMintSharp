@@ -11,7 +11,7 @@ string ethereumPrivateKey = Environment.GetEnvironmentVariable("ETHEREUMPRIVATEK
 
 ILoopringMintService loopringMintService = new LoopringMintService();
 var storageId = await loopringMintService.GetNextStorageId(apiKey, 40940, 0);
-Console.WriteLine($"Storage id: {JsonConvert.SerializeObject(storageId)}");
+Console.WriteLine($"Storage id: {JsonConvert.SerializeObject(storageId, Formatting.Indented)}");
 
 CounterFactualNftInfo counterFactualNftInfo = new CounterFactualNftInfo
 {
@@ -21,8 +21,10 @@ CounterFactualNftInfo counterFactualNftInfo = new CounterFactualNftInfo
 };
 
 var counterFactualNft = await loopringMintService.ComputeTokenAddress(apiKey, counterFactualNftInfo);
-Console.WriteLine($"CounterFactualNFT Token Address: {JsonConvert.SerializeObject(counterFactualNft)}");
+Console.WriteLine($"CounterFactualNFT Token Address: {JsonConvert.SerializeObject(counterFactualNft, Formatting.Indented)}");
 
+var offChainFee = await loopringMintService.GetOffChainFee(apiKey, 40940, 9, counterFactualNft.tokenAddress);
+Console.WriteLine($"Offchain fee: {JsonConvert.SerializeObject(offChainFee, Formatting.Indented)}");
 
 Console.WriteLine("Enter any key to exit");
 Console.ReadKey();
