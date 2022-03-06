@@ -33,7 +33,7 @@ namespace LoopMintSharp
             }
             catch (HttpRequestException httpException)
             {
-                Console.WriteLine($"Error getting storage id {httpException.Message}");
+                Console.WriteLine($"Error getting storage id: {httpException.Message}");
                 return null;
             }
         }
@@ -53,7 +53,7 @@ namespace LoopMintSharp
             }
             catch (HttpRequestException httpException)
             {
-                Console.WriteLine($"Error getting storage id: {httpException.Message}");
+                Console.WriteLine($"Error getting computing token address: {httpException.Message}");
                 return null;
             }
         }
@@ -124,7 +124,6 @@ namespace LoopMintSharp
             try
             {
                 var response = await _client.ExecutePostAsync(request);
-                Console.WriteLine("Mint response: " + response.Content);
                 var data = JsonConvert.DeserializeObject<MintResponseData>(response.Content!);
                 return data;
             }

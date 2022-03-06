@@ -13,33 +13,32 @@ string loopringPrivateKey = Environment.GetEnvironmentVariable("LOOPRINGPRIVATEK
 //Console.WriteLine(loopringPrivateKey);
 //Console.WriteLine(ethereumPrivateKey);
 
-ILoopringMintService loopringMintService = new LoopringMintService();
-var storageId = await loopringMintService.GetNextStorageId(apiKey, 40940, 0);
-Console.WriteLine($"Storage id: {JsonConvert.SerializeObject(storageId, Formatting.Indented)}");
+//Changes these variables to suit
+var ipfsCid = "QmNhSqvvzQDy4GW8MUVH8hcDJPzHh22WSrW6Eu6DTUCmja";
+var exchange = "0x0BABA1Ad5bE3a5C0a66E7ac838a129Bf948f1eA4";
+var minterAddress = "0x36Cd6b3b9329c04df55d55D41C257a5fdD387ACd";
+var accountId = 40940; 
+var nftType = 0; //nfttype 0 = ERC1155
+var creatorFeeBips = 0; //i wonder what setting to something other than 0 would do?
+var amount = 1;
+var validUntil = 1700000000;
 
+ILoopringMintService loopringMintService = new LoopringMintService();
+var storageId = await loopringMintService.GetNextStorageId(apiKey, accountId, 0);
+Console.WriteLine($"Storage id: {JsonConvert.SerializeObject(storageId, Formatting.Indented)}");
 CounterFactualNftInfo counterFactualNftInfo = new CounterFactualNftInfo
 {
-    nftOwner = "0x36Cd6b3b9329c04df55d55D41C257a5fdD387ACd",
+    nftOwner = minterAddress,
     nftFactory = "0xc852aC7aAe4b0f0a0Deb9e8A391ebA2047d80026",
     nftBaseUri = ""
 };
 
-//Generating the nftId
-var ipfsCid = "Qme98atVjoBjAgd6Yckmhmqh34Ho2xJWj8wjU3AKaeuG2r";
+//Generate the nft id here
 Multihash multiHash = Multihash.Parse(ipfsCid);
 string multiHashString = multiHash.ToString();
 var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
 var nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
 Console.WriteLine($"Generated NFT ID: {nftId}");
-
-
-var exchange = "0x0BABA1Ad5bE3a5C0a66E7ac838a129Bf948f1eA4";
-var minterAddress = "0x36Cd6b3b9329c04df55d55D41C257a5fdD387ACd";
-var accountId = 40940;
-var nftType = 0;
-var creatorFeeBips = 0;
-var amount = 1;
-var validUntil = 1700000000;
 
 var counterFactualNft = await loopringMintService.ComputeTokenAddress(apiKey, counterFactualNftInfo);
 Console.WriteLine($"CounterFactualNFT Token Address: {JsonConvert.SerializeObject(counterFactualNft, Formatting.Indented)}");
@@ -101,6 +100,7 @@ var nftMintResponse = await loopringMintService.MintNft(
     counterFactualNftInfo: counterFactualNftInfo,
     eddsaSignature: eddsaSignature
     );
+
 Console.WriteLine($"Nft Mint response: {JsonConvert.SerializeObject(nftMintResponse, Formatting.Indented)}");
 
 Console.WriteLine("Enter any key to exit");
