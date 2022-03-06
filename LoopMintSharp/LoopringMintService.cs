@@ -33,7 +33,7 @@ namespace LoopMintSharp
             }
             catch (HttpRequestException httpException)
             {
-                Console.WriteLine($"Error getting storage id {httpException}");
+                Console.WriteLine($"Error getting storage id {httpException.Message}");
                 return null;
             }
         }
@@ -53,7 +53,7 @@ namespace LoopMintSharp
             }
             catch (HttpRequestException httpException)
             {
-                Console.WriteLine($"Error getting storage id: {httpException}");
+                Console.WriteLine($"Error getting storage id: {httpException.Message}");
                 return null;
             }
         }
@@ -73,7 +73,59 @@ namespace LoopMintSharp
             }
             catch (HttpRequestException httpException)
             {
-                Console.WriteLine($"Error getting off chain fee: {httpException}");
+                Console.WriteLine($"Error getting off chain fee: {httpException.Message}");
+                return null;
+            }
+        }
+
+        public async Task<MintResponseData> MintNft(
+            string apiKey, 
+            string exchange, 
+            int minterId, 
+            string minterAddress,
+            int toAccountId,
+            string toAddress, 
+            int nftType, 
+            string tokenAddress, 
+            string nftId, 
+            string amount, 
+            long validUntil, 
+            int creatorFeeBips, 
+            int storageId, 
+            int maxFeeTokenId, 
+            string maxFeeAmount, 
+            bool forceToMint, 
+            CounterFactualNftInfo counterFactualNftInfo)
+        {
+            var request = new RestRequest("api/v3/nft/mint");
+            request.AddHeader("x-api-key", apiKey);
+            request.AddParameter("exchange", exchange);
+            request.AddParameter("minterId", minterId);
+            request.AddParameter("minterAddress", minterAddress);
+            request.AddParameter("toAccountId", toAccountId);
+            request.AddParameter("toAddress", toAddress);
+            request.AddParameter("nftType", nftType);
+            request.AddParameter("tokenAddress", tokenAddress);
+            request.AddParameter("nftId", nftId);
+            request.AddParameter("amount", amount);
+            request.AddParameter("validUntil", validUntil);
+            request.AddParameter("creatorFeeBips", creatorFeeBips);
+            request.AddParameter("storageId", storageId);
+            request.AddParameter("maxFee.tokenId", maxFeeTokenId);
+            request.AddParameter("maxFee.Amount", maxFeeAmount);
+            request.AddParameter("forceToMint", forceToMint);
+            request.AddParameter("counterFactualNftInfo.nftFactory", counterFactualNftInfo.nftFactory);
+            request.AddParameter("counterFactualNftInfo.nftOwner", counterFactualNftInfo.nftOwner);
+            request.AddParameter("counterFactualNftInfo.nftBaseUri", counterFactualNftInfo.nftBaseUri);
+            try
+            {
+                var response = await _client.PostAsync(request);
+                var data = JsonConvert.DeserializeObject<MintResponseData>(response.Content!);
+                return data;
+            }
+            catch (HttpRequestException httpException)
+            {
+                Console.WriteLine($"Error minting nft!: {httpException.Message}");
                 return null;
             }
         }
