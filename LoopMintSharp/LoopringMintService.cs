@@ -98,8 +98,8 @@ namespace LoopMintSharp
             CounterFactualNftInfo counterFactualNftInfo)
         {
             var request = new RestRequest("api/v3/nft/mint");
-            request.AlwaysMultipartFormData = true;
             request.AddHeader("x-api-key", apiKey);
+            request.AlwaysMultipartFormData = true;
             request.AddParameter("exchange", exchange);
             request.AddParameter("minterId", minterId);
             request.AddParameter("minterAddress", minterAddress);
@@ -113,22 +113,22 @@ namespace LoopMintSharp
             request.AddParameter("creatorFeeBips", creatorFeeBips);
             request.AddParameter("storageId", storageId);
             request.AddParameter("maxFee.tokenId", maxFeeTokenId);
-            request.AddParameter("maxFee.Amount", maxFeeAmount);
-            request.AddParameter("forceToMint", forceToMint);
+            request.AddParameter("maxFee.amount", maxFeeAmount);
+            request.AddParameter("forceToMint", "false");
             request.AddParameter("counterFactualNftInfo.nftFactory", counterFactualNftInfo.nftFactory);
             request.AddParameter("counterFactualNftInfo.nftOwner", counterFactualNftInfo.nftOwner);
             request.AddParameter("counterFactualNftInfo.nftBaseUri", counterFactualNftInfo.nftBaseUri);
 
             try
             {
-                var response = await _client.PostAsync(request);
+                var response = await _client.ExecutePostAsync(request);
+                Console.WriteLine("Mint response: " + response.Content);
                 var data = JsonConvert.DeserializeObject<MintResponseData>(response.Content!);
                 return data;
             }
             catch (HttpRequestException httpException)
             {
                 Console.WriteLine($"Error minting nft!: {httpException.Message}");
-                Console.WriteLine($"Error minting nft!: {httpException.Data}");
                 return null;
             }
         }
