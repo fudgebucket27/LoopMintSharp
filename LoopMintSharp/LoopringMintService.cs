@@ -98,6 +98,7 @@ namespace LoopMintSharp
             CounterFactualNftInfo counterFactualNftInfo)
         {
             var request = new RestRequest("api/v3/nft/mint");
+            request.AlwaysMultipartFormData = true;
             request.AddHeader("x-api-key", apiKey);
             request.AddParameter("exchange", exchange);
             request.AddParameter("minterId", minterId);
@@ -117,6 +118,7 @@ namespace LoopMintSharp
             request.AddParameter("counterFactualNftInfo.nftFactory", counterFactualNftInfo.nftFactory);
             request.AddParameter("counterFactualNftInfo.nftOwner", counterFactualNftInfo.nftOwner);
             request.AddParameter("counterFactualNftInfo.nftBaseUri", counterFactualNftInfo.nftBaseUri);
+
             try
             {
                 var response = await _client.PostAsync(request);
@@ -126,6 +128,7 @@ namespace LoopMintSharp
             catch (HttpRequestException httpException)
             {
                 Console.WriteLine($"Error minting nft!: {httpException.Message}");
+                Console.WriteLine($"Error minting nft!: {httpException.Data}");
                 return null;
             }
         }
