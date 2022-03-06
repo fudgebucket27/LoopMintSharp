@@ -28,6 +28,7 @@ namespace LoopMintSharp
             int maxFeeTokenId, 
             string maxFeeAmount, 
             bool forceToMint, 
-            CounterFactualNftInfo counterFactualNftInfo);
+            CounterFactualNftInfo counterFactualNftInfo,
+            string eddsaSignature);
     }
 }
