@@ -20,7 +20,8 @@ CounterFactualNftInfo counterFactualNftInfo = new CounterFactualNftInfo
     nftBaseUri = ""
 };
 
-Helpers.ComputerNftTokenAddress(counterFactualNftInfo);
+var counterFactualNft = await loopringMintService.ComputeTokenAddress(apiKey, counterFactualNftInfo);
+Console.WriteLine($"CounterFactualNFT Token Address: {JsonConvert.SerializeObject(counterFactualNft)}");
 
 
 Console.WriteLine("Enter any key to exit");

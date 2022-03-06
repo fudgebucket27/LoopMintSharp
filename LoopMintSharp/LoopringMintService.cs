@@ -38,6 +38,26 @@ namespace LoopMintSharp
             }
         }
 
+        public async Task<CounterFactualNft> ComputeTokenAddress(string apiKey, CounterFactualNftInfo counterFactualNftInfo)
+        {
+            var request = new RestRequest("/api/v3/nft/info/computeTokenAddress");
+            request.AddHeader("x-api-key", apiKey);
+            request.AddParameter("nftFactory", counterFactualNftInfo.nftFactory);
+            request.AddParameter("nftOwner", counterFactualNftInfo.nftOwner);
+            request.AddParameter("nftBaseUri", counterFactualNftInfo.nftBaseUri);
+            try
+            {
+                var response = await _client.GetAsync(request);
+                var data = JsonConvert.DeserializeObject<CounterFactualNft>(response.Content!);
+                return data;
+            }
+            catch (HttpRequestException httpException)
+            {
+                Console.WriteLine($"Error getting storage id {httpException}");
+                return null;
+            }
+        }
+
         public void Dispose()
         {
             _client?.Dispose();
