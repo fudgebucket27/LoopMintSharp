@@ -7,7 +7,7 @@ using Multiformats.Hash;
 
 string apiKey = Environment.GetEnvironmentVariable("LOOPRINGAPIKEY", EnvironmentVariableTarget.Machine);//you can either set an environmental variable or input it here directly.
 string loopringPrivateKey = Environment.GetEnvironmentVariable("LOOPRINGPRIVATEKEY", EnvironmentVariableTarget.Machine); //you can either set an environmental variable or input it here directly.
-string ethereumPrivateKey = Environment.GetEnvironmentVariable("ETHEREUMPRIVATEKEY", EnvironmentVariableTarget.Machine); //you can either set an environmental variable or input it here directly.
+//string ethereumPrivateKey = Environment.GetEnvironmentVariable("ETHEREUMPRIVATEKEY", EnvironmentVariableTarget.Machine); //you can either set an environmental variable or input it here directly.
 
 //Console.WriteLine(apiKey);
 //Console.WriteLine(loopringPrivateKey);
@@ -25,7 +25,7 @@ CounterFactualNftInfo counterFactualNftInfo = new CounterFactualNftInfo
 };
 
 //Generating the nftId
-var ipfsCid = "QmQNhJjDGaugoWRWktS6s6SYQcVRmxwmdx9Q34zy6PhtR8";
+var ipfsCid = "Qme98atVjoBjAgd6Yckmhmqh34Ho2xJWj8wjU3AKaeuG2r";
 Multihash multiHash = Multihash.Parse(ipfsCid);
 string multiHashString = multiHash.ToString();
 var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
