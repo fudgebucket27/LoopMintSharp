@@ -19,7 +19,7 @@ var amount = 1; //leave this to one so you only mint 1
 var validUntil = 1700000000; //the examples seem to use this number
 #endregion
 
-#region Get storeage id, token address and offchain fee
+#region Get storage id, token address and offchain fee
 ILoopringMintService loopringMintService = new LoopringMintService();
 
 //Getting the storage id
