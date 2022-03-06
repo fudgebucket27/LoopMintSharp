@@ -2,6 +2,8 @@
 using Newtonsoft.Json;
 using PoseidonSharp;
 using System.Numerics;
+using System.Text;
+using Multiformats.Hash;
 
 string apiKey = Environment.GetEnvironmentVariable("LOOPRINGAPIKEY", EnvironmentVariableTarget.Machine);//you can either set an environmental variable or input it here directly.
 string loopringPrivateKey = Environment.GetEnvironmentVariable("LOOPRINGPRIVATEKEY", EnvironmentVariableTarget.Machine); //you can either set an environmental variable or input it here directly.
@@ -21,7 +23,15 @@ CounterFactualNftInfo counterFactualNftInfo = new CounterFactualNftInfo
     nftFactory = "0xc852aC7aAe4b0f0a0Deb9e8A391ebA2047d80026",
     nftBaseUri = ""
 };
-var nftId = "0x1e3d78c9cf6472512434876e36985fcb46f38c98d53e809e4c84e339cf90bce3"; //gotta figure out how this is generated from the IPFS CID
+
+//Generating the nftId
+var ipfsCid = "QmQNhJjDGaugoWRWktS6s6SYQcVRmxwmdx9Q34zy6PhtR8"; // kkb nft that has already been minted
+Multihash multiHash = Multihash.Parse(ipfsCid);
+string multiHashString = multiHash.ToString();
+var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
+var nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
+
+
 var exchange = "0x0BABA1Ad5bE3a5C0a66E7ac838a129Bf948f1eA4";
 var minterAddress = "0x36Cd6b3b9329c04df55d55D41C257a5fdD387ACd";
 var accountId = 40940;
