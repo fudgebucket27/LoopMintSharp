@@ -25,11 +25,12 @@ CounterFactualNftInfo counterFactualNftInfo = new CounterFactualNftInfo
 };
 
 //Generating the nftId
-var ipfsCid = "QmQNhJjDGaugoWRWktS6s6SYQcVRmxwmdx9Q34zy6PhtR8"; // kkb nft that has already been minted
+var ipfsCid = "QmQNhJjDGaugoWRWktS6s6SYQcVRmxwmdx9Q34zy6PhtR8";
 Multihash multiHash = Multihash.Parse(ipfsCid);
 string multiHashString = multiHash.ToString();
 var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
 var nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
+Console.WriteLine($"Generated NFT ID: {nftId}");
 
 
 var exchange = "0x0BABA1Ad5bE3a5C0a66E7ac838a129Bf948f1eA4";
