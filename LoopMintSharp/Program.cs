@@ -7,8 +7,8 @@ using Multiformats.Hash;
 
 #region Initial Setup
 //Changes these variables to suit
-string apiKey = Environment.GetEnvironmentVariable("LOOPRINGAPIKEY", EnvironmentVariableTarget.Machine);//you can either set an environmental variable or input it here directly. You can export this account using loopring.io
-string loopringPrivateKey = Environment.GetEnvironmentVariable("LOOPRINGPRIVATEKEY", EnvironmentVariableTarget.Machine); //you can either set an environmental variable or input it here directly. You can export this account using loopring.io
+string apiKey = Environment.GetEnvironmentVariable("LOOPRINGAPIKEY", EnvironmentVariableTarget.Machine);//you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
+string loopringPrivateKey = Environment.GetEnvironmentVariable("LOOPRINGPRIVATEKEY", EnvironmentVariableTarget.Machine); //you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 var ipfsCid = "QmNhSqvvzQDy4GW8MUVH8hcDJPzHh22WSrW6Eu6DTUCmja"; //the ipfs cid of your metadata.json
 var exchange = "0x0BABA1Ad5bE3a5C0a66E7ac838a129Bf948f1eA4"; //shouldn't need to change this
 var minterAddress = "0x36Cd6b3b9329c04df55d55D41C257a5fdD387ACd"; //your address
