@@ -9,11 +9,11 @@ using Multiformats.Hash;
 //Changes these variables to suit
 string loopringApiKey = Environment.GetEnvironmentVariable("LOOPRINGAPIKEY", EnvironmentVariableTarget.Machine);//you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 string loopringPrivateKey = Environment.GetEnvironmentVariable("LOOPRINGPRIVATEKEY", EnvironmentVariableTarget.Machine); //you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
-var ipfsCid = "QmNhSqvvzQDy4GW8MUVH8hcDJPzHh22WSrW6Eu6DTUCmja"; //the ipfs cid of your metadata.json
+var ipfsCid = "QmdjmxTW6fvS9Pn9oqKU1Kb3ryxhmPB4ScCHfZrUP7LHhS"; //the ipfs cid of your metadata.json
 var minterAddress = "0x36Cd6b3b9329c04df55d55D41C257a5fdD387ACd"; //your loopring address
 var accountId = 40940; //your loopring account id
 var nftType = 0; //nfttype 0 = ERC1155, shouldn't need to change this unless you want ERC721 which is 1
-var creatorFeeBips = 0; //i wonder what setting this to something other than 0 would do?
+var creatorFeeBips = 50; //i wonder what setting this to something other than 0 would do?
 var amount = 1; //leave this to one so you only mint 1
 var validUntil = 1700000000; //the examples seem to use this number
 var maxFeeTokenId = 0; //0 should be for ETH, 1 is for LRC?
@@ -76,7 +76,7 @@ BigInteger[] nftPoseidonInputs =
     nftDataPoseidonHash,
     (BigInteger) amount,
     (BigInteger) 0,
-    BigInteger.Parse(offChainFee.fees[0].fee),
+    BigInteger.Parse(offChainFee.fees[maxFeeTokenId].fee),
     (BigInteger) validUntil,
     (BigInteger) storageId.offchainId
 };
