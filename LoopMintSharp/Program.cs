@@ -25,7 +25,7 @@ var exchange = "0x0BABA1Ad5bE3a5C0a66E7ac838a129Bf948f1eA4"; //loopring exchange
 ILoopringMintService loopringMintService = new LoopringMintService();
 
 //Getting the storage id
-var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, 0);
+var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, maxFeeTokenId);
 Console.WriteLine($"Storage id: {JsonConvert.SerializeObject(storageId, Formatting.Indented)}");
 
 //Getting the token address
@@ -39,7 +39,7 @@ var counterFactualNft = await loopringMintService.ComputeTokenAddress(loopringAp
 Console.WriteLine($"CounterFactualNFT Token Address: {JsonConvert.SerializeObject(counterFactualNft, Formatting.Indented)}");
 
 //Getting the offchain fee
-var offChainFee = await loopringMintService.GetOffChainFee(loopringApiKey, 40940, 9, counterFactualNft.tokenAddress);
+var offChainFee = await loopringMintService.GetOffChainFee(loopringApiKey, accountId, 9, counterFactualNft.tokenAddress);
 Console.WriteLine($"Offchain fee: {JsonConvert.SerializeObject(offChainFee, Formatting.Indented)}");
 #endregion
 
