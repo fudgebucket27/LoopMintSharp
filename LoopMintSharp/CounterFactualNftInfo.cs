@@ -9,7 +9,7 @@ namespace LoopMintSharp
     public class CounterFactualNftInfo
     {
         public string nftOwner { get; set; }
-        public string nftFactory { get; set; } = "0xc852aC7aAe4b0f0a0Deb9e8A391ebA2047d80026";
+        public string nftFactory { get; set; }
         public string nftBaseUri { get; set; } = "";
     }
 }
