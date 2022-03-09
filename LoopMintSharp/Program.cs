@@ -9,7 +9,7 @@ using Multiformats.Hash;
 //Changes these variables to suit
 string loopringApiKey = Environment.GetEnvironmentVariable("LOOPRINGAPIKEY", EnvironmentVariableTarget.Machine);//you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 string loopringPrivateKey = Environment.GetEnvironmentVariable("LOOPRINGPRIVATEKEY", EnvironmentVariableTarget.Machine); //you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
-var ipfsCid = "QmdjmxTW6fvS9Pn9oqKU1Kb3ryxhmPB4ScCHfZrUP7LHhS"; //the ipfs cid of your metadata.json
+var ipfsCid = "QmVQ4jnoHAMrRycy4JMrndjrLVXDzPn6d7tjabZmCX5eXy"; //the ipfs cid of your metadata.json
 var minterAddress = "0x36Cd6b3b9329c04df55d55D41C257a5fdD387ACd"; //your loopring address
 var accountId = 40940; //your loopring account id
 var nftType = 0; //nfttype 0 = ERC1155, shouldn't need to change this unless you want ERC721 which is 1
@@ -46,7 +46,7 @@ Console.WriteLine($"Offchain fee: {JsonConvert.SerializeObject(offChainFee, Form
 #region Generate Eddsa Signature
 
 //Generate the nft id here
-Multihash multiHash = Multihash.Parse(ipfsCid);
+Multihash multiHash = Multihash.Parse(ipfsCid, Multiformats.Base.MultibaseEncoding.Base58Btc);
 string multiHashString = multiHash.ToString();
 var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
 var nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
