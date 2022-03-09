@@ -1,4 +1,8 @@
-# LoopMintSharp
-Trying to automate minting on loopring using the API. I'm using my own PoseidonSharp for the hashing.
+# LoopMintPy
 
-This is a Console App on .NET 6. You need something like Visual Studio 2022 to compile.
+This is a Python adaptation of fudgey's [LoopMintSharp](https://github.com/fudgebucket27/LoopMintSharp)
+## Install
+```bash
+git clone --recurse-submodules https://github.com/Montspy/LoopMintPy.git
+pip3 install -r hello_loopring/requirements.txt -r requirements.txt
+```
