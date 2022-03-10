@@ -79,7 +79,6 @@ async def main():
     hasher = NFTDataEddsaSignHelper()
     nft_data_poseidon_hash = hasher.hash(inputs)
     # pprint(inputs)
-    # pprint(hex(nft_data_poseidon_hash))
     print(f"Hashed NFT data: {hex(nft_data_poseidon_hash)}")
 
     # Generate the poseidon hash for the remaining data
@@ -98,10 +97,8 @@ async def main():
     hasher = NFTEddsaSignHelper(private_key=cfg['loopringPrivateKey'])
     nft_poseidon_hash = hasher.hash(inputs)
     # pprint(inputs)
-    # pprint(hex(nft_poseidon_hash))
     print(f"Hashed NFT payload: {hex(nft_poseidon_hash)}")
 
-    # hasher = NFTEddsaSignHelper()
     eddsa_signature = hasher.sign(inputs)
     print(f"Signed NFT payload hash: {eddsa_signature}")
 

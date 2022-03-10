@@ -12,8 +12,8 @@ from pprint import pprint
 from StorageId import StorageId
 from CounterFactualNft import CounterFactualNft, CounterFactualNftInfo
 from OffchainFee import OffchainFee
-from hello_loopring.sdk.ethsnarks import eddsa
 
+from hello_loopring.sdk.ethsnarks import eddsa
 from hello_loopring.sdk.ethsnarks.eddsa import PureEdDSA, PoseidonEdDSA
 from hello_loopring.sdk.ethsnarks.field import FQ, SNARK_SCALAR_FIELD
 from hello_loopring.sdk.ethsnarks.poseidon import poseidon_params, poseidon
@@ -164,16 +164,17 @@ class LoopringMintService(object):
 
         try:
             response = await self.session.post("/api/v3/nft/mint", json=params, headers=headers)
-            pprint(await response.json())
             response.raise_for_status()
             nft_mint_data = cast(MintResponseData, await response.json())
             # print(nft_mint_data)
         except aiohttp.ClientError as client_err:
-            print(f"Error minting nft: ")
+            print("Error minting nft: ")
             pprint(client_err)
+            pprint(await response.json())
         except Exception as err:
-            print(f"An error ocurred minting nft: ")
+            print("An error ocurred minting nft: ")
             pprint(err)
+            pprint(await response.json())
 
         return nft_mint_data
 
