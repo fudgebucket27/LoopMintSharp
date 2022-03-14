@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:16-alpine as BUILD_IMAGE
 WORKDIR /usr/src/app
 
 # Install app dependencies
@@ -6,12 +6,16 @@ WORKDIR /usr/src/app
 # where available (npm@5+)
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci --only-production
 # If you are building your code for production
 # RUN npm ci --only=production
 
 # Bundle app source
 COPY . .
+
+RUN rm -rf node_modules/protobufjs/cli/
+RUN rm -rf node_modules/protobufjs/src/
+RUN rm -rf node_modules/protobufjs/dist/*.map
 
 EXPOSE 3000
 CMD [ "node", "server.js" ]

@@ -57,19 +57,18 @@ def parse_args():
 async def main():
     args = parse_args()
 
+    # Initial Setup
+    setup()
+
     if args.format == 'path':
         try:
             async with CIDGenerator() as generator:
                 cfg['ipfsCid'] = await generator.get_cid_from_file(args.nft)
                 cfg['ipfsCidThumb'] = await generator.get_cid_from_file(args.thumb)
         except Exception as err:
-            print(f"Error with the CID Generator: {err}")
+            sys.exit(f"Error with the CID Generator: {err}")
 
     pprint(cfg)
-    return
-
-    # Initial Setup
-    setup()
 
     # Get storage id, token address and offchain fee
     async with LoopringMintService() as lms:
