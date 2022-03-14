@@ -1,5 +1,5 @@
 # LoopMintSharp
-Trying to automate minting on loopring using the API. I'm using my own PoseidonSharp for the hashing.
+Automated minting on Loopring using the API.
 
 This is a Console App on .NET 6. To build and compile this yourself you need something like Visual Studio 2022.
 
@@ -13,7 +13,7 @@ LoopMintSharp QmWG5QL4MbDux8Dtb1AkijMH73fFnuUDumMxVkQw6YFyBE
 ```
 
 # Compiling yourself
-If compiling yourself. You need to generate an appsettings.json file in the project directory with the "Copy to Output directory" set to "Copy Always". The appsetings.json file should look like the following
+If compiling yourself. You need to generate an appsettings.json file in the project directory with the "Copy to Output directory" set to "Copy Always". The appsettings.json file should look like the following
 
 ```json
 {
@@ -32,3 +32,4 @@ If compiling yourself. You need to generate an appsettings.json file in the proj
   }
 }
 ```
+You will also need to supply a command line argument for the ipfs cid or just put it in the code directly.
