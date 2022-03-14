@@ -10,6 +10,7 @@ from aiohttp import ClientSession
 import json
 from pprint import pprint
 import base58
+from CIDGenerator import CIDGenerator
 
 from LoopringMintService import LoopringMintService, NFTDataEddsaSignHelper, NFTEddsaSignHelper
 from CounterFactualNft import CounterFactualNftInfo
@@ -20,7 +21,7 @@ def setup():
     # Changes these variables to suit
     cfg['loopringApiKey']       = environ.get("LOOPRINGAPIKEY")                     # TODO: Get from env variable. you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
     cfg['loopringPrivateKey']   = environ.get("LOOPRINGPRIVATEKEY")                 # TODO: Get from env variable. you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
-    cfg['ipfsCid']              = "QmdmRoWVU4PV9ZCi1khprtX2YdAzV9UEFN5igZZGxPVAa4"  # the ipfs cid of your metadata.json
+    # cfg['ipfsCid']              = "QmdmRoWVU4PV9ZCi1khprtX2YdAzV9UEFN5igZZGxPVAa4"  # the ipfs cid of your metadata.json
     cfg['minterAddress']        = "0x1c65331556Cff08bb06c56fBb68FB0D1D2194F8A"      # your loopring address
     cfg['accountId']            = 34247		                                        # your loopring account id
     cfg['nftType']              = 0		                                            # nfttype 0 = ERC1155, shouldn't need to change this unless you want ERC721 which is 1
@@ -37,12 +38,38 @@ def setup():
     assert cfg['loopringApiKey'] is not None
 
 def parse_args():
-    pass
+    # check for command line arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', '--format',          help="Specify the input format (CID or file path)", type=str, 
+                                                   choices=['cid', 'path'], required=True)
+    parser.add_argument('-n', '--nft',             help="Specify the NFT file (CIDv0 hash of path to file)", type=str)
+    parser.add_argument('-t', '--thumb',           help="Specify the NFT thumbnail (CIDv0 hash of path to file) (default: <NFT>)", type=str)
+    parser.add_argument('-c', '--count',           help="Specify the amount of items to mint (default: 1)", type=int, default=1)
+
+    args = parser.parse_args()
+
+    # Default thumbnails to the NFT (file or CID)
+    if args.thumb is None:
+        args.thumb = args.nft
+
+    return args
     
 async def main():
+    args = parse_args()
+
+    if args.format == 'path':
+        try:
+            async with CIDGenerator() as generator:
+                cfg['ipfsCid'] = await generator.get_cid_from_file(args.nft)
+                cfg['ipfsCidThumb'] = await generator.get_cid_from_file(args.thumb)
+        except Exception as err:
+            print(f"Error with the CID Generator: {err}")
+
+    pprint(cfg)
+    return
+
     # Initial Setup
     setup()
-    args = parse_args()
 
     # Get storage id, token address and offchain fee
     async with LoopringMintService() as lms:
