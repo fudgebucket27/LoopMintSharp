@@ -1,4 +1,4 @@
-FROM node:16-alpine as BUILD_IMAGE
+FROM node:16-alpine
 WORKDIR /usr/src/app
 
 # Install app dependencies
@@ -14,7 +14,6 @@ RUN npm ci --only-production
 COPY . .
 
 RUN rm -rf node_modules/protobufjs/cli/
-RUN rm -rf node_modules/protobufjs/src/
 RUN rm -rf node_modules/protobufjs/dist/*.map
 
 EXPOSE 3000

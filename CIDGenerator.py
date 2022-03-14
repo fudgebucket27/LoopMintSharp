@@ -71,8 +71,8 @@ class CIDGenerator(object):
                     response.raise_for_status()
                     hash = cast(CIDGeneratorResponse, await response.json())['hash']
                 except aiohttp.ClientError as client_err:
-                    print(f"Error getting storage id: {client_err}")
+                    print(f"Error getting CID: {client_err}")
                 except Exception as err:
-                    print(f"An error ocurred getting storage id: {err}")
+                    print(f"An error ocurred getting CID: {err}")
 
                 return hash
