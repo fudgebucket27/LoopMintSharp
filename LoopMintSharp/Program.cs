@@ -20,8 +20,8 @@ string loopringPrivateKey = settings.LoopringPrivateKey; //you can either set an
 var minterAddress = settings.LoopringAddress; //your loopring address
 var accountId = settings.LoopringAccountId; //your loopring account id
 var nftType = settings.NftType; //nfttype 0 = ERC1155, shouldn't need to change this unless you want ERC721 which is 1
-var creatorFeeBips = settings.NftRoyaltyPercentage; //i wonder what setting this to something other than 0 would do?
-var amount = settings.NftAmount; //leave this to one so you only mint 1
+var nftRoyaltyPercentage = settings.NftRoyaltyPercentage; //i wonder what setting this to something other than 0 would do?
+var nftAmount = settings.NftAmount; //leave this to one so you only mint 1
 var validUntil = settings.ValidUntil; //the examples seem to use this number
 var maxFeeTokenId = settings.MaxFeeTokenId; //0 should be for ETH, 1 is for LRC?
 var nftFactory = settings.NftFactory; //current nft factory of loopring, shouldn't need to change unless they deploye a new contract again, sigh...
@@ -69,7 +69,7 @@ BigInteger[] nftDataPoseidonInputs =
     Utils.ParseHexUnsigned(counterFactualNft.tokenAddress),
     nftIdLo,
     nftIdHi,
-    (BigInteger)creatorFeeBips
+    (BigInteger)nftRoyaltyPercentage
 };
 Poseidon nftDataPoseidon = new Poseidon(7, 6, 52, "poseidon", 5, _securityTarget: 128);
 BigInteger nftDataPoseidonHash = nftDataPoseidon.CalculatePoseidonHash(nftDataPoseidonInputs);
@@ -81,7 +81,7 @@ BigInteger[] nftPoseidonInputs =
     (BigInteger) accountId,
     (BigInteger) accountId,
     nftDataPoseidonHash,
-    (BigInteger) amount,
+    (BigInteger) nftAmount,
     (BigInteger) maxFeeTokenId,
     BigInteger.Parse(offChainFee.fees[maxFeeTokenId].fee),
     (BigInteger) validUntil,
@@ -106,9 +106,9 @@ var nftMintResponse = await loopringMintService.MintNft(
     nftType: nftType,
     tokenAddress: counterFactualNft.tokenAddress,
     nftId,
-    amount: amount.ToString(),
+    amount: nftAmount.ToString(),
     validUntil: validUntil,
-    creatorFeeBips: creatorFeeBips,
+    royaltyPercentage: nftRoyaltyPercentage,
     storageId.offchainId,
     maxFeeTokenId: maxFeeTokenId,
     maxFeeAmount: offChainFee.fees[maxFeeTokenId].fee,

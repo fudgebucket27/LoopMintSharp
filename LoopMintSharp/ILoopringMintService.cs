@@ -23,7 +23,7 @@ namespace LoopMintSharp
             string nftId,
             string amount, 
             long validUntil, 
-            int creatorFeeBips, 
+            int royaltyPercentage, 
             int storageId, 
             int maxFeeTokenId, 
             string maxFeeAmount, 

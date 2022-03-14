@@ -90,7 +90,7 @@ namespace LoopMintSharp
             string nftId, 
             string amount, 
             long validUntil, 
-            int creatorFeeBips, 
+            int royaltyPercentage, 
             int storageId, 
             int maxFeeTokenId, 
             string maxFeeAmount, 
@@ -111,7 +111,7 @@ namespace LoopMintSharp
             request.AddParameter("nftId", nftId);
             request.AddParameter("amount", amount);
             request.AddParameter("validUntil", validUntil);
-            request.AddParameter("creatorFeeBips", creatorFeeBips);
+            request.AddParameter("royaltyPercentage", royaltyPercentage);
             request.AddParameter("storageId", storageId);
             request.AddParameter("maxFee.tokenId", maxFeeTokenId);
             request.AddParameter("maxFee.amount", maxFeeAmount);
