@@ -40,15 +40,10 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--format',          help="Specify the input format (CID or file path)", type=str, 
                                                    choices=['cid', 'path'], required=True)
-    parser.add_argument('-n', '--nft',             help="Specify the NFT file (CIDv0 hash of path to file)", type=str)
-    parser.add_argument('-t', '--thumb',           help="Specify the NFT thumbnail (CIDv0 hash of path to file) (default: <NFT>)", type=str)
+    parser.add_argument('-m', '--metadata',        help="Specify the metadata.json file (CIDv0 hash or path to file)", type=str)
     parser.add_argument('-c', '--count',           help="Specify the amount of items to mint (default: 1)", type=int, default=1)
 
     args = parser.parse_args()
-
-    # Default thumbnails to the NFT (file or CID)
-    if args.thumb is None:
-        args.thumb = args.nft
 
     return args
     
@@ -61,8 +56,7 @@ async def main():
     if args.format == 'path':
         try:
             async with CIDGenerator() as generator:
-                cfg['ipfsCid'] = await generator.get_cid_from_file(args.nft)
-                cfg['ipfsCidThumb'] = await generator.get_cid_from_file(args.thumb)
+                cfg['ipfsCid'] = await generator.get_cid_from_file(args.metadata)
         except Exception as err:
             sys.exit(f"Error with the CID Generator: {err}")
 
