@@ -32,3 +32,4 @@ If compiling yourself. You need to generate an appsettings.json file in the proj
   }
 }
 ```
+You will also need to supply a command line argument for the ipfs cid or just put it in the code directly.
