@@ -4,21 +4,28 @@ using PoseidonSharp;
 using System.Numerics;
 using System.Text;
 using Multiformats.Hash;
+using Microsoft.Extensions.Configuration;
 
 #region Initial Setup
+IConfiguration config = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json")
+    .AddEnvironmentVariables()
+    .Build();
+Settings settings = config.GetRequiredSection("Settings").Get<Settings>();
+
 //Changes these variables to suit
-string loopringApiKey = Environment.GetEnvironmentVariable("LOOPRINGAPIKEY", EnvironmentVariableTarget.Machine);//you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
-string loopringPrivateKey = Environment.GetEnvironmentVariable("LOOPRINGPRIVATEKEY", EnvironmentVariableTarget.Machine); //you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
-var ipfsCid = "Qmdo2mKioZNoqDpxJ4MPGByXPzzUzGsUPPH5g3n63Z9d6H"; //the ipfs cid of your metadata.json
-var minterAddress = "0x36Cd6b3b9329c04df55d55D41C257a5fdD387ACd"; //your loopring address
-var accountId = 40940; //your loopring account id
-var nftType = 0; //nfttype 0 = ERC1155, shouldn't need to change this unless you want ERC721 which is 1
-var creatorFeeBips = 6; //i wonder what setting this to something other than 0 would do?
-var amount = 1; //leave this to one so you only mint 1
-var validUntil = 1700000000; //the examples seem to use this number
-var maxFeeTokenId = 1; //0 should be for ETH, 1 is for LRC?
-var nftFactory = "0xc852aC7aAe4b0f0a0Deb9e8A391ebA2047d80026"; //current nft factory of loopring, shouldn't need to change unless they deploye a new contract again, sigh...
-var exchange = "0x0BABA1Ad5bE3a5C0a66E7ac838a129Bf948f1eA4"; //loopring exchange address, shouldn't need to change this,
+var ipfsCid = args[0]; //the ipfs cid of your metadata.json, provided via command line argument
+string loopringApiKey = settings.LoopringApiKey;//you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
+string loopringPrivateKey = settings.LoopringPrivateKey; //you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
+var minterAddress = settings.LoopringAddress; //your loopring address
+var accountId = settings.LoopringAccountId; //your loopring account id
+var nftType = settings.NftType; //nfttype 0 = ERC1155, shouldn't need to change this unless you want ERC721 which is 1
+var creatorFeeBips = settings.NftRoyaltyPercentage; //i wonder what setting this to something other than 0 would do?
+var amount = settings.NftAmount; //leave this to one so you only mint 1
+var validUntil = settings.ValidUntil; //the examples seem to use this number
+var maxFeeTokenId = settings.MaxFeeTokenId; //0 should be for ETH, 1 is for LRC?
+var nftFactory = settings.NftFactory; //current nft factory of loopring, shouldn't need to change unless they deploye a new contract again, sigh...
+var exchange = settings.Exchange; //loopring exchange address, shouldn't need to change this,
 #endregion
 
 #region Get storage id, token address and offchain fee
@@ -114,5 +121,3 @@ if(nftMintResponse.hash != null)
     Console.WriteLine($"Nft Mint response: {JsonConvert.SerializeObject(nftMintResponse, Formatting.Indented)}");
 }
 #endregion
-Console.WriteLine("Enter any key to exit");
-Console.ReadKey();
