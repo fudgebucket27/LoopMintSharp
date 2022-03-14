@@ -31,8 +31,6 @@ def setup():
     cfg['maxFeeTokenId']        = 1		                                            # 0 should be for ETH, 1 is for LRC?
     cfg['nftFactory']           = "0xc852aC7aAe4b0f0a0Deb9e8A391ebA2047d80026"	    # current nft factory of loopring, shouldn't need to change unless they deploye a new contract again, sigh...
     cfg['exchange']             = "0x0BABA1Ad5bE3a5C0a66E7ac838a129Bf948f1eA4"	    # loopring exchange address, shouldn't need to change this
-    print("config dump:")
-    pprint(cfg)
 
     assert cfg['loopringPrivateKey'] is not None and cfg['loopringPrivateKey'][:2] == "0x"
     assert cfg['loopringApiKey'] is not None
@@ -68,22 +66,26 @@ async def main():
         except Exception as err:
             sys.exit(f"Error with the CID Generator: {err}")
 
+    print("config dump:")
     pprint(cfg)
 
     # Get storage id, token address and offchain fee
     async with LoopringMintService() as lms:
         # Getting the storage id
         storage_id = await lms.getNextStorageId(apiKey=cfg['loopringApiKey'], accountId=cfg['accountId'], sellTokenId=cfg['maxFeeTokenId'])
-        print(f"Storage id: {json.dumps(storage_id, sort_keys=True, indent=4)}")
+        print("Storage id:")
+        pprint(storage_id)
 
         # Getting the token address
         counterfactual_ntf_info = CounterFactualNftInfo(nftOwner=cfg['minterAddress'], nftFactory=cfg['nftFactory'], nftBaseUri="")
         counterfactual_nft = await lms.computeTokenAddress(apiKey=cfg['loopringApiKey'], counterFactualNftInfo=counterfactual_ntf_info)
-        print(f"CounterFactualNFT Token Address: {json.dumps(counterfactual_nft, sort_keys=True, indent=4)}")
+        print("CounterFactualNFT Token Address:")
+        pprint(counterfactual_nft)
 
         # Getting the offchain fee
         off_chain_fee = await lms.getOffChainFee(apiKey=cfg['loopringApiKey'], accountId=cfg['accountId'], requestType=9, tokenAddress=counterfactual_nft['tokenAddress'])
-        print(f"Offchain fee:  {json.dumps(off_chain_fee, sort_keys=True, indent=4)}")
+        print("Offchain fee:")
+        pprint(off_chain_fee)
     
     # Generate Eddsa Signature
     # Generate the nft id here
@@ -150,7 +152,7 @@ async def main():
             counterFactualNftInfo=counterfactual_ntf_info,
             eddsaSignature=eddsa_signature
         )
-        print(f"Nft Mint reponse: {json.dumps(nft_mint_response, sort_keys=True, indent=4)}")
+        print(f"Nft Mint reponse: {nft_mint_response}")
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()

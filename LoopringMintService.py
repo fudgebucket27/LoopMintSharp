@@ -67,13 +67,16 @@ class LoopringMintService(object):
 
         try:
             response = await self.session.request("get", "/api/v3/storageId", params=params, headers=headers)
+            parsed = await response.json()
             response.raise_for_status()
-            storage_id = cast(StorageId, await response.json())
+            storage_id = cast(StorageId, parsed)
             # print(storage_id)
         except aiohttp.ClientError as client_err:
             print(f"Error getting storage id: {client_err}")
+            pprint(parsed)
         except Exception as err:
             print(f"An error ocurred getting storage id: {err}")
+            pprint(parsed)
 
         return storage_id
 
@@ -86,13 +89,16 @@ class LoopringMintService(object):
 
         try:
             response = await self.session.request("get", "/api/v3/nft/info/computeTokenAddress", params=params, headers=headers)
+            parsed = await response.json()
             response.raise_for_status()
-            counterfactual_nft = cast(CounterFactualNft, await response.json())
+            counterfactual_nft = cast(CounterFactualNft, parsed)
             # print(counterfactual_nft)
         except aiohttp.ClientError as client_err:
             print(f"Error computing token address: {client_err}")
+            pprint(parsed)
         except Exception as err:
             print(f"An error ocurred computing token address: {err}")
+            pprint(parsed)
 
         return counterfactual_nft
 
@@ -105,13 +111,16 @@ class LoopringMintService(object):
 
         try:
             response = await self.session.request("get", "/api/v3/user/nft/offchainFee", params=params, headers=headers)
+            parsed = await response.json()
             response.raise_for_status()
-            off_chain_fee = cast(OffchainFee, await response.json())
+            off_chain_fee = cast(OffchainFee, parsed)
             # print(off_chain_fee)
         except aiohttp.ClientError as client_err:
             print(f"Error getting off chain fee: {client_err}")
+            pprint(parsed)
         except Exception as err:
             print(f"An error ocurred getting off chain fee: {err}")
+            pprint(parsed)
 
         return off_chain_fee
         
@@ -164,17 +173,18 @@ class LoopringMintService(object):
 
         try:
             response = await self.session.post("/api/v3/nft/mint", json=params, headers=headers)
+            parsed = await response.json()
             response.raise_for_status()
-            nft_mint_data = cast(MintResponseData, await response.json())
+            nft_mint_data = cast(MintResponseData, parsed)
             # print(nft_mint_data)
         except aiohttp.ClientError as client_err:
             print("Error minting nft: ")
             pprint(client_err)
-            pprint(await response.json())
+            pprint(parsed)
         except Exception as err:
             print("An error ocurred minting nft: ")
             pprint(err)
-            pprint(await response.json())
+            pprint(parsed)
 
         return nft_mint_data
 

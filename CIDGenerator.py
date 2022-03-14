@@ -8,8 +8,8 @@ import docker
 import aiohttp
 import asyncio
 import json
-
 from typing import TypedDict, cast
+from pprint import pprint
 
 class CIDGeneratorResponse(TypedDict):
     hash: str
@@ -29,6 +29,8 @@ class CIDGenerator(object):
 
     async def __aexit__(self, exc_type, exc, tb) -> None:
         await self.session.close()
+        self.container.kill()
+        self.container.remove()
 
     def __init__(self) -> None:
         client = docker.from_env()
@@ -47,10 +49,6 @@ class CIDGenerator(object):
 
         self.session = aiohttp.ClientSession(base_url=self.base_url)
         print("Docker container running")
-    
-    def __del__(self) -> None:
-        self.container.kill()
-        self.container.remove()
 
     async def get_cid_from_file(self, filepath: str) -> str:
         filepath = path.expanduser(filepath)    # Expand '~' into absolute path
@@ -68,11 +66,14 @@ class CIDGenerator(object):
 
                 try:
                     response = await self.session.post("/api/hashFile", data=mpwriter)
+                    parsed = await response.json()
                     response.raise_for_status()
-                    hash = cast(CIDGeneratorResponse, await response.json())['hash']
+                    hash = cast(CIDGeneratorResponse, parsed)['hash']
                 except aiohttp.ClientError as client_err:
                     print(f"Error getting CID: {client_err}")
+                    pprint(parsed)
                 except Exception as err:
                     print(f"An error ocurred getting CID: {err}")
+                    pprint(parsed)
 
                 return hash
