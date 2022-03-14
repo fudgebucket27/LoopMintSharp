@@ -16,9 +16,10 @@ class CIDGeneratorResponse(TypedDict):
 
 class CIDGenerator(object):
     DOCKER_IMAGE_VERSION = "v0p1"
-    DOCKER_REDIRECTIONS = {'3000/tcp': ('127.0.0.1', '3030')}
+    DOCKER_HOST = "127.0.0.1"
     DOCKER_PORT = 3030
-    base_url: str = "http://127.0.0.1:" + str(DOCKER_PORT) + "/"
+    DOCKER_REDIRECTIONS = {'3000/tcp': (DOCKER_HOST, DOCKER_PORT)}
+    base_url: str = "http://" + DOCKER_HOST + ":" + str(DOCKER_PORT) + "/"
     session: aiohttp.ClientSession
 
     client: docker.DockerClient
