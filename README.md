@@ -1,5 +1,5 @@
 # LoopMintSharp
-Trying to automate minting on loopring using the API. I'm using my own PoseidonSharp for the hashing.
+Automated minting on Loopring using the API.
 
 This is a Console App on .NET 6. To build and compile this yourself you need something like Visual Studio 2022.
 
