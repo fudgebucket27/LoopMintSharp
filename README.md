@@ -4,7 +4,7 @@ Automated minting on Loopring using the API.
 This is a Console App on .NET 6. To build and compile this yourself you need something like Visual Studio 2022.
 
 # Setup 
-Download one of the compiled releases in the [Releases](https://github.com/fudgebucket27/LoopMintSharp/releases) section. You will need to edit the included appsettings.json file with your own Loopring details, ie api key, private key and etc. You can export these out from your account via https://loopring.io
+Download one of the compiled releases in the [Releases](https://github.com/fudgebucket27/LoopMintSharp/releases) section. You will need to edit the included appsettings.json file with your own Loopring details, ie api key, private key and etc. You can export these out from your account via https://loopring.io . Remember to keep these values private and do not share with anyone!
 
 Once you have setup the appsettings.json file you can call LoopMintSharp via command line as follows, where the first argument is the IPFS CID of your metadata.json file:
 
@@ -13,7 +13,7 @@ LoopMintSharp QmWG5QL4MbDux8Dtb1AkijMH73fFnuUDumMxVkQw6YFyBE
 ```
 
 # Compiling yourself
-If compiling yourself. You need to generate an appsettings.json file in the project directory with the "Copy to Output directory" set to "Copy Always". The appsettings.json file should look like the following
+If compiling yourself. You need to generate an appsettings.json file in the project directory with the "Copy to Output directory" set to "Copy Always". The appsettings.json file should look like the following, remember to keep these values private and do not share with anyone!
 
 ```json
 {
