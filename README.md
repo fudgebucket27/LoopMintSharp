@@ -6,10 +6,16 @@ This is a Console App on .NET 6. To build and compile this yourself you need som
 # Setup 
 Download one of the compiled releases in the [Releases](https://github.com/fudgebucket27/LoopMintSharp/releases) section. You will need to edit the included appsettings.json file with your own Loopring details, ie api key, private key and etc. You can export these out from your account via https://loopring.io . Remember to keep these values private and do not share with anyone!
 
+## Single Mint
 Once you have setup the appsettings.json file you can call LoopMintSharp via command line as follows, where the first argument is the IPFS CID of your metadata.json file:
 
 ```batch
 LoopMintSharp QmWG5QL4MbDux8Dtb1AkijMH73fFnuUDumMxVkQw6YFyBE
+```
+## Batch mint
+You can also batch mint! You need to create a .txt file with all of your IPFS CIDs on each line. Once you have created the .txt file just pass its full file path to LoopMintSharp like below. A csv report of the mint results will also be created after the minting is done.
+```batch
+LoopMintSharp C:\temp\cids.txt
 ```
 
 # Compiling yourself
