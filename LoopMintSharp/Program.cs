@@ -34,7 +34,7 @@ if (!ipfsCid.Contains(".txt") && ipfsCid.StartsWith("Qm")) //Single Mint
 }
 #endregion
 #region Batch Mint
-else //Batch mint from CSV
+else //Batch mint from text file
 {
     List<MintResponse> mintResponses = new List<MintResponse>();
     using (StreamReader sr = new StreamReader(ipfsCid))
