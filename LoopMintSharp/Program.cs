@@ -40,7 +40,7 @@ else //Batch mint from CSV
     using (StreamReader sr = new StreamReader(ipfsCid))
     {
         string currentCid;
-        // currentLine will be null when the StreamReader reaches the end of file
+        //currentCid will be null when the StreamReader reaches the end of file
         while ((currentCid = sr.ReadLine()) != null)
         {
             var mintResponse = await minter.Mint(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactory, exchange, currentCid);
