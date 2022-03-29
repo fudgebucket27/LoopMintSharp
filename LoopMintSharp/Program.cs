@@ -12,7 +12,7 @@ IConfiguration config = new ConfigurationBuilder()
 Settings settings = config.GetRequiredSection("Settings").Get<Settings>();
 
 //Changes these variables to suit
-var ipfsCid = args[0]; //command line argument, can be the ipfs cid of your metadata.json or a .txt file containg your all of your ipfs cids on each line
+var ipfsCid = args[0]; //command line argument, can be the ipfs cid of your metadata.json or a .txt file containing all of your ipfs cids on each line
 string loopringApiKey = settings.LoopringApiKey;//you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 string loopringPrivateKey = settings.LoopringPrivateKey; //you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 var minterAddress = settings.LoopringAddress; //your loopring address
