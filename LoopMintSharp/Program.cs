@@ -1,12 +1,8 @@
 ﻿using LoopMintSharp;
-using Newtonsoft.Json;
-using PoseidonSharp;
-using System.Numerics;
-using System.Text;
-using Multiformats.Hash;
 using Microsoft.Extensions.Configuration;
 using CsvHelper;
 using System.Globalization;
+
 
 #region Initial Setup
 IConfiguration config = new ConfigurationBuilder()
@@ -30,102 +26,11 @@ var nftFactory = settings.NftFactory; //current nft factory of loopring, shouldn
 var exchange = settings.Exchange; //loopring exchange address, shouldn't need to change this,
 #endregion
 
-
+Minter minter = new Minter();
 #region Single Mint
 if (!ipfsCid.Contains(".txt") && ipfsCid.StartsWith("Qm")) //Single Mint
 {
-    #region Get storage id, token address and offchain fee
-    ILoopringMintService loopringMintService = new LoopringMintService();
-    //Getting the storage id
-    var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, maxFeeTokenId);
-    Console.WriteLine($"Storage id: {JsonConvert.SerializeObject(storageId, Formatting.Indented)}");
-
-    //Getting the token address
-    CounterFactualNftInfo counterFactualNftInfo = new CounterFactualNftInfo
-    {
-        nftOwner = minterAddress,
-        nftFactory = nftFactory,
-        nftBaseUri = "" //this aint used in the api as far as i can tell. for future use
-    };
-    var counterFactualNft = await loopringMintService.ComputeTokenAddress(loopringApiKey, counterFactualNftInfo);
-    Console.WriteLine($"CounterFactualNFT Token Address: {JsonConvert.SerializeObject(counterFactualNft, Formatting.Indented)}");
-
-    //Getting the offchain fee
-    var offChainFee = await loopringMintService.GetOffChainFee(loopringApiKey, accountId, 9, counterFactualNft.tokenAddress);
-    Console.WriteLine($"Offchain fee: {JsonConvert.SerializeObject(offChainFee, Formatting.Indented)}");
-    #endregion
-
-    #region Generate Eddsa Signature
-
-    //Generate the nft id here
-    Multihash multiHash = Multihash.Parse(ipfsCid, Multiformats.Base.MultibaseEncoding.Base58Btc);
-    string multiHashString = multiHash.ToString();
-    var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
-    var nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
-    Console.WriteLine($"Generated NFT ID: {nftId}");
-
-    //Generate the poseidon hash for the nft data
-    var nftIdHi = Utils.ParseHexUnsigned(nftId.Substring(0, 34));
-    var nftIdLo = Utils.ParseHexUnsigned(nftId.Substring(34, 32));
-    BigInteger[] nftDataPoseidonInputs =
-    {
-        Utils.ParseHexUnsigned(minterAddress),
-        (BigInteger) 0,
-        Utils.ParseHexUnsigned(counterFactualNft.tokenAddress),
-        nftIdLo,
-        nftIdHi,
-        (BigInteger)nftRoyaltyPercentage
-    };
-    Poseidon nftDataPoseidon = new Poseidon(7, 6, 52, "poseidon", 5, _securityTarget: 128);
-    BigInteger nftDataPoseidonHash = nftDataPoseidon.CalculatePoseidonHash(nftDataPoseidonInputs);
-
-    //Generate the poseidon hash for the remaining data
-    BigInteger[] nftPoseidonInputs =
-    {
-        Utils.ParseHexUnsigned(exchange),
-        (BigInteger) accountId,
-        (BigInteger) accountId,
-        nftDataPoseidonHash,
-        (BigInteger) nftAmount,
-        (BigInteger) maxFeeTokenId,
-        BigInteger.Parse(offChainFee.fees[maxFeeTokenId].fee),
-        (BigInteger) validUntil,
-        (BigInteger) storageId.offchainId
-    };
-    Poseidon nftPoseidon = new Poseidon(10, 6, 53, "poseidon", 5, _securityTarget: 128);
-    BigInteger nftPoseidonHash = nftPoseidon.CalculatePoseidonHash(nftPoseidonInputs);
-
-    //Generate the poseidon eddsa signature
-    Eddsa eddsa = new Eddsa(nftPoseidonHash, loopringPrivateKey);
-    string eddsaSignature = eddsa.Sign();
-    #endregion
-
-    #region Submit the nft mint
-    var nftMintResponse = await loopringMintService.MintNft(
-        apiKey: loopringApiKey,
-        exchange: exchange,
-        minterId: accountId,
-        minterAddress: minterAddress,
-        toAccountId: accountId,
-        toAddress: minterAddress,
-        nftType: nftType,
-        tokenAddress: counterFactualNft.tokenAddress,
-        nftId,
-        amount: nftAmount.ToString(),
-        validUntil: validUntil,
-        royaltyPercentage: nftRoyaltyPercentage,
-        storageId.offchainId,
-        maxFeeTokenId: maxFeeTokenId,
-        maxFeeAmount: offChainFee.fees[maxFeeTokenId].fee,
-        forceToMint: false,
-        counterFactualNftInfo: counterFactualNftInfo,
-        eddsaSignature: eddsaSignature
-        );
-    if (nftMintResponse.hash != null)
-    {
-        Console.WriteLine($"Nft Mint response: {JsonConvert.SerializeObject(nftMintResponse, Formatting.Indented)}");
-    }
-    #endregion
+    var mintResponse = await minter.Mint(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactory, exchange, ipfsCid);
 }
 #endregion
 #region Batch Mint
@@ -138,106 +43,8 @@ else //Batch mint from CSV
         // currentLine will be null when the StreamReader reaches the end of file
         while ((currentCid = sr.ReadLine()) != null)
         {
-            #region Get storage id, token address and offchain fee
-            //Getting the storage id
-            ILoopringMintService loopringMintService = new LoopringMintService();
-            var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, maxFeeTokenId);
-            Console.WriteLine($"Storage id: {JsonConvert.SerializeObject(storageId, Formatting.Indented)}");
-
-            //Getting the token address
-            CounterFactualNftInfo counterFactualNftInfo = new CounterFactualNftInfo
-            {
-                nftOwner = minterAddress,
-                nftFactory = nftFactory,
-                nftBaseUri = "" //this aint used in the api as far as i can tell. for future use
-            };
-            var counterFactualNft = await loopringMintService.ComputeTokenAddress(loopringApiKey, counterFactualNftInfo);
-            Console.WriteLine($"CounterFactualNFT Token Address: {JsonConvert.SerializeObject(counterFactualNft, Formatting.Indented)}");
-
-            //Getting the offchain fee
-            var offChainFee = await loopringMintService.GetOffChainFee(loopringApiKey, accountId, 9, counterFactualNft.tokenAddress);
-            Console.WriteLine($"Offchain fee: {JsonConvert.SerializeObject(offChainFee, Formatting.Indented)}");
-            #endregion
-
-            #region Generate Eddsa Signature
-
-            //Generate the nft id here
-            Multihash multiHash = Multihash.Parse(currentCid, Multiformats.Base.MultibaseEncoding.Base58Btc);
-            string multiHashString = multiHash.ToString();
-            var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
-            var nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
-            Console.WriteLine($"Generated NFT ID: {nftId}");
-
-            //Generate the poseidon hash for the nft data
-            var nftIdHi = Utils.ParseHexUnsigned(nftId.Substring(0, 34));
-            var nftIdLo = Utils.ParseHexUnsigned(nftId.Substring(34, 32));
-            BigInteger[] nftDataPoseidonInputs =
-            {
-                Utils.ParseHexUnsigned(minterAddress),
-                (BigInteger) 0,
-                Utils.ParseHexUnsigned(counterFactualNft.tokenAddress),
-                nftIdLo,
-                nftIdHi,
-                (BigInteger)nftRoyaltyPercentage
-            };
-            Poseidon nftDataPoseidon = new Poseidon(7, 6, 52, "poseidon", 5, _securityTarget: 128);
-            BigInteger nftDataPoseidonHash = nftDataPoseidon.CalculatePoseidonHash(nftDataPoseidonInputs);
-
-            //Generate the poseidon hash for the remaining data
-            BigInteger[] nftPoseidonInputs =
-            {
-                Utils.ParseHexUnsigned(exchange),
-                (BigInteger) accountId,
-                (BigInteger) accountId,
-                nftDataPoseidonHash,
-                (BigInteger) nftAmount,
-                (BigInteger) maxFeeTokenId,
-                BigInteger.Parse(offChainFee.fees[maxFeeTokenId].fee),
-                (BigInteger) validUntil,
-                (BigInteger) storageId.offchainId
-            };
-            Poseidon nftPoseidon = new Poseidon(10, 6, 53, "poseidon", 5, _securityTarget: 128);
-            BigInteger nftPoseidonHash = nftPoseidon.CalculatePoseidonHash(nftPoseidonInputs);
-
-            //Generate the poseidon eddsa signature
-            Eddsa eddsa = new Eddsa(nftPoseidonHash, loopringPrivateKey);
-            string eddsaSignature = eddsa.Sign();
-            #endregion
-
-            #region Submit the nft mint
-            var nftMintResponse = await loopringMintService.MintNft(
-                apiKey: loopringApiKey,
-                exchange: exchange,
-                minterId: accountId,
-                minterAddress: minterAddress,
-                toAccountId: accountId,
-                toAddress: minterAddress,
-                nftType: nftType,
-                tokenAddress: counterFactualNft.tokenAddress,
-                nftId,
-                amount: nftAmount.ToString(),
-                validUntil: validUntil,
-                royaltyPercentage: nftRoyaltyPercentage,
-                storageId.offchainId,
-                maxFeeTokenId: maxFeeTokenId,
-                maxFeeAmount: offChainFee.fees[maxFeeTokenId].fee,
-                forceToMint: false,
-                counterFactualNftInfo: counterFactualNftInfo,
-                eddsaSignature: eddsaSignature
-                );
-            MintResponse mintResponse = new MintResponse();
-            mintResponse.metadataCid = currentCid;
-            if (nftMintResponse.hash != null)
-            {
-                Console.WriteLine($"Nft Mint response: {JsonConvert.SerializeObject(nftMintResponse, Formatting.Indented)}");
-                mintResponse.status = "Minted successfully";
-            }
-            else
-            {
-                mintResponse.status = "Mint failed";
-            }
+            var mintResponse = await minter.Mint(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactory, exchange, currentCid);
             mintResponses.Add(mintResponse);
-            #endregion
         }
     }
 
@@ -253,3 +60,7 @@ else //Batch mint from CSV
     #endregion
 }
 #endregion
+
+
+
+
