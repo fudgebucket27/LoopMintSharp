@@ -1,5 +1,5 @@
 # LoopMintSharp
-Automated minting on Loopring using the API.
+Automated single/batch minting on Loopring using the API.
 
 This is a Console App on .NET 6. To build and compile this yourself you need something like Visual Studio 2022.
 
