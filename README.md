@@ -9,7 +9,7 @@ Download one of the compiled releases in the [Releases](https://github.com/fudge
 macOS users: You also need to run the following command in the unzipped folder of LoopMintSharp to turn it into an executable in order to run it.
 
 ```batch
-chmod +x LoopMintSharrp
+chmod +x LoopMintSharp
 ```
 If compiling yourself please read the section about it below.
 
