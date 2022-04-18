@@ -6,6 +6,11 @@ This is a Console App on .NET 6. To build and compile this yourself you need som
 # Setup 
 Download one of the compiled releases in the [Releases](https://github.com/fudgebucket27/LoopMintSharp/releases) section. You will need to edit the included appsettings.json file with your own Loopring details, ie api key, private key and etc. You can export these out from your account via https://loopring.io . Remember to keep these values private and do not share with anyone!
 
+macOS users: You also need to run the following command in the unzipped folder of LoopMintSharp to turn it into an executable in order to run it.
+
+```batch
+chmod +x LoopMintSharrp
+```
 If compiling yourself please read the section about it below.
 
 ## Single Mint
@@ -14,10 +19,21 @@ Once you have setup the appsettings.json file you can call LoopMintSharp via com
 ```batch
 LoopMintSharp QmWG5QL4MbDux8Dtb1AkijMH73fFnuUDumMxVkQw6YFyBE
 ```
+
+macOS users: 
+```batch
+./LoopMintSharp QmWG5QL4MbDux8Dtb1AkijMH73fFnuUDumMxVkQw6YFyBE
+```
+
 ## Batch mint
 You can also batch mint! You need to create a .txt file with all of your IPFS CIDs on each line. Once you have created the .txt file just pass its full file path to LoopMintSharp like below. A csv report of the mint results will also be created after the minting is done.
 ```batch
 LoopMintSharp C:\temp\cids.txt
+```
+
+macOS users: 
+```batch
+./LoopMintSharp /users/user/docs/cids.txt
 ```
 
 # Compiling yourself
@@ -28,7 +44,7 @@ If compiling yourself. You need to generate an appsettings.json file in the proj
   "Settings": {
     "LoopringApiKey": "Your Api Key Here", //Your loopring api key
     "LoopringPrivateKey": "Your Private Key Here", //Your loopring private key
-    "LoopringAddress": "Your loopring address here", //Your loopring address
+    "LoopringAddress": "Your loopring address here", //Your loopring address (NOT YOUR ENS)
     "LoopringAccountId": 40940, //Your loopring account id 
     "NftAmount": 1, //Amount of NFTs to mint, number between 1 - 10 000
     "NftRoyaltyPercentage": 6, //Nft royalty percentage can be between 1% - 10%
