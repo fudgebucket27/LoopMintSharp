@@ -1,7 +1,9 @@
 # LoopMintSharp
 Automated single/batch minting on Loopring using the API.
 
-This is a Console App on .NET 6. To build and compile this yourself you need something like Visual Studio 2022.
+This is a Console App on .NET 6. To build and compile this yourself you need something like Visual Studio 2022. 
+
+I suggest downloading one of the compiled releases.
 
 # Setup 
 Download one of the compiled releases in the [Releases](https://github.com/fudgebucket27/LoopMintSharp/releases) section. You will need to edit the included appsettings.json file with your own Loopring details; ie api key, private key,address(not your ENS) and account id. You can export these out from your account via https://loopring.io . Remember to keep these values private and do not share with anyone!
