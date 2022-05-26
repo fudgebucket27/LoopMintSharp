@@ -28,7 +28,7 @@ macOS users:
 ```
 
 ## Batch mint
-You can also batch mint! You need to create a .txt file with all of your metatadata.json IPFS CIDs on each line. Once you have created the .txt file just pass its full file path to LoopMintSharp like below. A csv report of the mint results will also be created after the minting is done.
+You can also batch mint! You need to create a .txt file with all of your metadata.json IPFS CIDs on each line. Once you have created the .txt file just pass its full file path to LoopMintSharp like below. A csv report of the mint results will also be created after the minting is done.
 ```batch
 LoopMintSharp C:\temp\cids.txt
 ```
