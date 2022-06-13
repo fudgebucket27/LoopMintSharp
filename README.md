@@ -59,3 +59,6 @@ If compiling yourself. You need to generate an appsettings.json file in the proj
 }
 ```
 You will also need to supply a command line argument for the ipfs cid(single mint)/ipfs cid text file path(for batch minting) or just put it in the code directly(line 15).
+
+# Video Tutorial
+Here is a video for single mint use: https://www.youtube.com/watch?v=yYlaKdXIcuQ Thanks To @BimboSlice on Twitter!
