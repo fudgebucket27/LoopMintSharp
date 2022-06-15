@@ -113,6 +113,7 @@ namespace LoopMintSharp
                 eddsaSignature: eddsaSignature
                 );
             nftMintResponse.metadataCid = currentCid;
+            nftMintResponse.nftId = nftId;
             if (nftMintResponse.hash != null)
             {
                 Console.WriteLine($"Nft Mint response: {JsonConvert.SerializeObject(nftMintResponse, Formatting.Indented)}");
