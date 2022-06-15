@@ -12,7 +12,7 @@ namespace LoopMintSharp
 {
     public class Minter
     {
-        public async Task<MintResponse> Mint(string loopringApiKey,
+        public async Task<MintResponseData> Mint(string loopringApiKey,
                         string loopringPrivateKey,
                         string? minterAddress,
                         int accountId,
@@ -112,18 +112,17 @@ namespace LoopMintSharp
                 counterFactualNftInfo: counterFactualNftInfo,
                 eddsaSignature: eddsaSignature
                 );
-            MintResponse mintResponse = new MintResponse();
-            mintResponse.metadataCid = currentCid;
+            nftMintResponse.metadataCid = currentCid;
             if (nftMintResponse.hash != null)
             {
                 Console.WriteLine($"Nft Mint response: {JsonConvert.SerializeObject(nftMintResponse, Formatting.Indented)}");
-                mintResponse.status = "Minted successfully";
+                nftMintResponse.status = "Minted successfully";
             }
             else
             {
-                mintResponse.status = "Mint failed";
+                nftMintResponse.status = "Mint failed";
             }
-            return mintResponse;
+            return nftMintResponse;
             #endregion
         }
     }

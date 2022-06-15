@@ -15,5 +15,6 @@ namespace LoopMintSharp
             public bool isIdempotent { get; set; }
             public int accountId { get; set; }
             public int storageId { get; set; }
+            public string metadataCid { get; set; }
     }
 }

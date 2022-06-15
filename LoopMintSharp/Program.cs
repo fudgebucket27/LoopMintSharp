@@ -36,7 +36,7 @@ if (!ipfsCid.Contains(".txt") && ipfsCid.StartsWith("Qm")) //Single Mint
 #region Batch Mint
 else //Batch mint from text file
 {
-    List<MintResponse> mintResponses = new List<MintResponse>();
+    List<MintResponseData> mintResponses = new List<MintResponseData>();
     using (StreamReader sr = new StreamReader(ipfsCid))
     {
         string currentCid;
