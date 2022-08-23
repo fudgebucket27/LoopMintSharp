@@ -23,13 +23,17 @@ namespace LoopMintSharp
                         int maxFeeTokenId,
                         string? nftFactory,
                         string? exchange,
-                        string currentCid)
+                        string currentCid,
+                        bool verboseLogging)
         {
             #region Get storage id, token address and offchain fee
             //Getting the storage id
             ILoopringMintService loopringMintService = new LoopringMintService();
-            var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, maxFeeTokenId);
-            Console.WriteLine($"Storage id: {JsonConvert.SerializeObject(storageId, Formatting.Indented)}");
+            var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, maxFeeTokenId, verboseLogging);
+            if(verboseLogging)
+            {
+                Console.WriteLine($"Storage id: {JsonConvert.SerializeObject(storageId, Formatting.Indented)}");
+            }
 
             //Getting the token address
             CounterFactualNftInfo counterFactualNftInfo = new CounterFactualNftInfo
@@ -38,12 +42,18 @@ namespace LoopMintSharp
                 nftFactory = nftFactory,
                 nftBaseUri = "" //this aint used in the api as far as i can tell. for future use
             };
-            var counterFactualNft = await loopringMintService.ComputeTokenAddress(loopringApiKey, counterFactualNftInfo);
-            Console.WriteLine($"CounterFactualNFT Token Address: {JsonConvert.SerializeObject(counterFactualNft, Formatting.Indented)}");
+            var counterFactualNft = await loopringMintService.ComputeTokenAddress(loopringApiKey, counterFactualNftInfo, verboseLogging);
+            if(verboseLogging)
+            {
+                Console.WriteLine($"CounterFactualNFT Token Address: {JsonConvert.SerializeObject(counterFactualNft, Formatting.Indented)}");
+            }
 
             //Getting the offchain fee
-            var offChainFee = await loopringMintService.GetOffChainFee(loopringApiKey, accountId, 9, counterFactualNft.tokenAddress);
-            Console.WriteLine($"Offchain fee: {JsonConvert.SerializeObject(offChainFee, Formatting.Indented)}");
+            var offChainFee = await loopringMintService.GetOffChainFee(loopringApiKey, accountId, 9, counterFactualNft.tokenAddress, verboseLogging);
+            if(verboseLogging)
+            {
+                Console.WriteLine($"Offchain fee: {JsonConvert.SerializeObject(offChainFee, Formatting.Indented)}");
+            }
             #endregion
 
             #region Generate Eddsa Signature
@@ -53,7 +63,10 @@ namespace LoopMintSharp
             string multiHashString = multiHash.ToString();
             var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
             var nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
-            Console.WriteLine($"Generated NFT ID: {nftId}");
+            if(verboseLogging)
+            {
+                Console.WriteLine($"Generated NFT ID: {nftId}");
+            }
 
             //Generate the poseidon hash for the nft data
             var nftIdHi = Utils.ParseHexUnsigned(nftId.Substring(0, 34));
@@ -110,13 +123,17 @@ namespace LoopMintSharp
                 maxFeeAmount: offChainFee.fees[maxFeeTokenId].fee,
                 forceToMint: false,
                 counterFactualNftInfo: counterFactualNftInfo,
-                eddsaSignature: eddsaSignature
+                eddsaSignature: eddsaSignature,
+                verboseLogging: verboseLogging
                 );
             nftMintResponse.metadataCid = currentCid;
             nftMintResponse.nftId = nftId;
             if (nftMintResponse.hash != null)
             {
-                Console.WriteLine($"Nft Mint response: {JsonConvert.SerializeObject(nftMintResponse, Formatting.Indented)}");
+                if(verboseLogging)
+                {
+                    Console.WriteLine($"Nft Mint response: {JsonConvert.SerializeObject(nftMintResponse, Formatting.Indented)}");
+                }
                 nftMintResponse.status = "Minted successfully";
             }
             else

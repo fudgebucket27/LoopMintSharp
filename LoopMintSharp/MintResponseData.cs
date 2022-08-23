@@ -18,5 +18,6 @@ namespace LoopMintSharp
             public int accountId { get; set; }
             public int storageId { get; set; }
             public string metadataCid { get; set; }
+            public string errorMessage { get; set; }
     }
 }

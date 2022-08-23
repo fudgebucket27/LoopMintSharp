@@ -12,7 +12,7 @@ IConfiguration config = new ConfigurationBuilder()
 Settings settings = config.GetRequiredSection("Settings").Get<Settings>();
 
 //Changes these variables to suit
-var ipfsCid = args[0]; //command line argument, can be the ipfs cid of your metadata.json or a .txt file containing all of your ipfs cids on each line
+var ipfsCid = "C:\\Temp\\cids.txt"; //command line argument, can be the ipfs cid of your metadata.json or a .txt file containing all of your ipfs cids on each line
 string loopringApiKey = settings.LoopringApiKey;//you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 string loopringPrivateKey = settings.LoopringPrivateKey; //you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 var minterAddress = settings.LoopringAddress; //your loopring address
@@ -24,18 +24,31 @@ var validUntil = settings.ValidUntil; //the examples seem to use this number
 var maxFeeTokenId = settings.MaxFeeTokenId; //0 should be for ETH, 1 is for LRC?
 var nftFactory = settings.NftFactory; //current nft factory of loopring, shouldn't need to change unless they deploye a new contract again, sigh...
 var exchange = settings.Exchange; //loopring exchange address, shouldn't need to change this,
+var verboseLogging = settings.VerboseLogging;
 #endregion
 
 Minter minter = new Minter();
 #region Single Mint
 if (!ipfsCid.Contains(".txt") && ipfsCid.StartsWith("Qm")) //Single Mint
 {
-    var mintResponse = await minter.Mint(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactory, exchange, ipfsCid);
+    Console.WriteLine("Attempting mint 1 out of 1 NFTs");
+    var mintResponse = await minter.Mint(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactory, exchange, ipfsCid, verboseLogging);
+    Console.SetCursorPosition(0, Console.CursorTop - 1);
+    if (!string.IsNullOrEmpty(mintResponse.errorMessage))
+    {
+        Console.WriteLine($"Mint 1 out of 1 NFTs was UNSUCCESSFUL. ERROR MESSAGE: {mintResponse.errorMessage}");
+    }
+    else
+    {
+        Console.WriteLine($"Mint 1 out of 1 NFTs was SUCCESSFUL");
+    }
 }
 #endregion
 #region Batch Mint
 else //Batch mint from text file
 {
+    var lineCount = File.ReadLines(ipfsCid).Count();
+    var count = 0;
     List<MintResponseData> mintResponses = new List<MintResponseData>();
     using (StreamReader sr = new StreamReader(ipfsCid))
     {
@@ -43,8 +56,19 @@ else //Batch mint from text file
         //currentCid will be null when the StreamReader reaches the end of file
         while ((currentCid = sr.ReadLine()) != null)
         {
-            var mintResponse = await minter.Mint(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactory, exchange, currentCid);
+            count++;
+            Console.WriteLine($"Attempting mint {count} out of {lineCount} NFTs");
+            var mintResponse = await minter.Mint(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactory, exchange, currentCid, verboseLogging);
             mintResponses.Add(mintResponse);
+            Console.SetCursorPosition(0, Console.CursorTop - 1);
+            if (!string.IsNullOrEmpty(mintResponse.errorMessage))
+            {
+                Console.WriteLine($"Mint {count} out of {lineCount} NFTs was UNSUCCESSFUL. ERROR MESSAGE: {mintResponse.errorMessage}");
+            }
+            else
+            {
+                Console.WriteLine($"Mint {count} out of {lineCount} NFTs was SUCCESSFUL");
+            }
         }
     }
 

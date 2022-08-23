@@ -19,5 +19,6 @@ namespace LoopMintSharp
         public int MaxFeeTokenId { get; set; }
         public string NftFactory { get; set; }
         public string Exchange { get; set; }
+        public bool VerboseLogging { get;set;}
     }
 }

@@ -8,9 +8,9 @@ namespace LoopMintSharp
 {
     public interface ILoopringMintService
     {
-        Task<StorageId> GetNextStorageId(string apiKey, int accountId, int sellTokenId);
-        Task<CounterFactualNft> ComputeTokenAddress(string apiKey, CounterFactualNftInfo counterFactualNftInfo);
-        Task<OffchainFee> GetOffChainFee(string apiKey, int accountId, int requestType, string tokenAddress);
+        Task<StorageId> GetNextStorageId(string apiKey, int accountId, int sellTokenId, bool verboseLogging);
+        Task<CounterFactualNft> ComputeTokenAddress(string apiKey, CounterFactualNftInfo counterFactualNftInfo, bool verboseLogging);
+        Task<OffchainFee> GetOffChainFee(string apiKey, int accountId, int requestType, string tokenAddress, bool verboseLogging);
         Task<MintResponseData> MintNft(
             string apiKey, 
             string exchange, 
@@ -29,6 +29,7 @@ namespace LoopMintSharp
             string maxFeeAmount, 
             bool forceToMint, 
             CounterFactualNftInfo counterFactualNftInfo,
-            string eddsaSignature);
+            string eddsaSignature, 
+            bool verboseLogging);
     }
 }

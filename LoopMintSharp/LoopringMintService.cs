@@ -19,7 +19,7 @@ namespace LoopMintSharp
             _client = new RestClient(_baseUrl);
         }
 
-        public async Task<StorageId> GetNextStorageId(string apiKey, int accountId, int sellTokenId)
+        public async Task<StorageId> GetNextStorageId(string apiKey, int accountId, int sellTokenId, bool verboseLogging)
         {
             var request = new RestRequest("api/v3/storageId");
             request.AddHeader("x-api-key", apiKey);
@@ -38,7 +38,7 @@ namespace LoopMintSharp
             }
         }
 
-        public async Task<CounterFactualNft> ComputeTokenAddress(string apiKey, CounterFactualNftInfo counterFactualNftInfo)
+        public async Task<CounterFactualNft> ComputeTokenAddress(string apiKey, CounterFactualNftInfo counterFactualNftInfo, bool verboseLogging)
         {
             var request = new RestRequest("api/v3/nft/info/computeTokenAddress");
             request.AddHeader("x-api-key", apiKey);
@@ -58,7 +58,7 @@ namespace LoopMintSharp
             }
         }
 
-        public async Task<OffchainFee> GetOffChainFee(string apiKey, int accountId, int requestType, string tokenAddress)
+        public async Task<OffchainFee> GetOffChainFee(string apiKey, int accountId, int requestType, string tokenAddress, bool verboseLogging)
         {
             var request = new RestRequest("api/v3/user/nft/offchainFee");
             request.AddHeader("x-api-key", apiKey);
@@ -96,7 +96,8 @@ namespace LoopMintSharp
             string maxFeeAmount, 
             bool forceToMint, 
             CounterFactualNftInfo counterFactualNftInfo,
-            string eddsaSignature)
+            string eddsaSignature, 
+            bool verboseLogging)
         {
             var request = new RestRequest("api/v3/nft/mint");
             request.AddHeader("x-api-key", apiKey);
@@ -125,15 +126,25 @@ namespace LoopMintSharp
             {
                 var response = await _client.ExecutePostAsync(request);
                 var data = JsonConvert.DeserializeObject<MintResponseData>(response.Content!);
-                if(!response.IsSuccessful)
+                if(!response.IsSuccessful && verboseLogging)
                 {
+                    data.errorMessage = response.Content;
                     Console.WriteLine($"Error minting nft: {response.Content}");
-                }    
+                }
+                else if(!response.IsSuccessful)
+                {
+                    data.errorMessage = response.Content;
+                }
                 return data;
             }
             catch (HttpRequestException httpException)
             {
-                Console.WriteLine($"Error minting nft!: {httpException.Message}");
+                var data = new MintResponseData();
+                if (verboseLogging)
+                {
+                    Console.WriteLine($"Error minting nft!: {httpException.Message}");
+                }
+                data.errorMessage = httpException.Message;
                 return null;
             }
         }
