@@ -12,7 +12,7 @@ IConfiguration config = new ConfigurationBuilder()
 Settings settings = config.GetRequiredSection("Settings").Get<Settings>();
 
 //Changes these variables to suit
-var ipfsCid = args[0]; //command line argument, can be the ipfs cid of your metadata.json or a .txt file containing all of your ipfs cids on each line
+var ipfsCid = "C:\\temp\\cids.txt"; //command line argument, can be the ipfs cid of your metadata.json or a .txt file containing all of your ipfs cids on each line
 string loopringApiKey = settings.LoopringApiKey;//you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 string loopringPrivateKey = settings.LoopringPrivateKey; //you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 var minterAddress = settings.LoopringAddress; //your loopring address
@@ -24,7 +24,8 @@ var validUntil = settings.ValidUntil; //the examples seem to use this number
 var maxFeeTokenId = settings.MaxFeeTokenId; //0 should be for ETH, 1 is for LRC?
 var nftFactory = settings.NftFactory; //current nft factory of loopring, shouldn't need to change unless they deploye a new contract again, sigh...
 var exchange = settings.Exchange; //loopring exchange address, shouldn't need to change this,
-var verboseLogging = settings.VerboseLogging;
+var verboseLogging = settings.VerboseLogging; //setting for verbose logging
+var skipMintFeePrompt = settings.SkipMintFeePrompt; //setting for mint fee prompt when batch minting
 #endregion
 
 Minter minter = new Minter();
@@ -49,6 +50,45 @@ else //Batch mint from text file
 {
     var lineCount = File.ReadLines(ipfsCid).Count();
     var count = 0;
+
+    if(skipMintFeePrompt == false)
+    {
+        var offChainFee = await minter.GetMintFee(loopringApiKey, accountId, minterAddress, nftFactory, verboseLogging);
+        var fee = offChainFee.fees[maxFeeTokenId].fee;
+        double feeAmount = lineCount * Double.Parse(fee);
+        if (maxFeeTokenId == 0)
+        {
+            Console.WriteLine($"It will cost around {TokenAmountConverter.ToString(feeAmount, 18)} ETH to mint {lineCount} NFTs");
+        }
+        else if (maxFeeTokenId == 1)
+        {
+            Console.WriteLine($"It will cost around {TokenAmountConverter.ToString(feeAmount, 18)} LRC to mint {lineCount} NFTs");
+        }
+        else
+        {
+            Console.WriteLine("Can only use MaxFeeTokenId of 0 for ETH or MaxFeeTokenId of 1 for LRC. Please set this correctly in your appsettings.json file!");
+            System.Environment.Exit(0);
+        }
+
+        Console.Write("Continue with minting? Enter y for yes or n for no:");
+        string continueMinting = Console.ReadLine().Trim().ToLower();
+        while (continueMinting != "y" && continueMinting != "n")
+        {
+            Console.Write("Continue with minting? Enter y for yes or n for no:");
+            continueMinting = Console.ReadLine().Trim().ToLower();
+        }
+
+        if (continueMinting == "n")
+        {
+            Console.WriteLine("Minting cancelled!");
+            System.Environment.Exit(0);
+        }
+        else if (continueMinting == "y")
+        {
+            Console.WriteLine("Minting started...");
+        }
+    }
+
     List<MintResponseData> mintResponses = new List<MintResponseData>();
     using (StreamReader sr = new StreamReader(ipfsCid))
     {

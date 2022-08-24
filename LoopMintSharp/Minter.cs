@@ -11,7 +11,30 @@ using System.Threading.Tasks;
 namespace LoopMintSharp
 {
     public class Minter
+
+
     {
+        public async Task<OffchainFee> GetMintFee(
+            string loopringApiKey,
+            int accountId,
+            string minterAddress,
+            string nftFactory,
+            bool verboseLogging
+            )
+        {
+            //Getting the token address
+            CounterFactualNftInfo counterFactualNftInfo = new CounterFactualNftInfo
+            {
+                nftOwner = minterAddress,
+                nftFactory = nftFactory,
+                nftBaseUri = "" //this aint used in the api as far as i can tell. for future use
+            };
+            ILoopringMintService loopringMintService = new LoopringMintService();
+            var counterFactualNft = await loopringMintService.ComputeTokenAddress(loopringApiKey, counterFactualNftInfo, verboseLogging);
+            var mintFee = await loopringMintService.GetOffChainFee(loopringApiKey, accountId, 9, counterFactualNft.tokenAddress, verboseLogging);
+            return mintFee;
+        }
+
         public async Task<MintResponseData> Mint(string loopringApiKey,
                         string loopringPrivateKey,
                         string? minterAddress,

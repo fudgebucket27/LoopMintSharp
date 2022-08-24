@@ -20,5 +20,7 @@ namespace LoopMintSharp
         public string NftFactory { get; set; }
         public string Exchange { get; set; }
         public bool VerboseLogging { get;set;}
+
+        public bool SkipMintFeePrompt { get; set; }
     }
 }
