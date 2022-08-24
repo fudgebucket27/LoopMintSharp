@@ -55,7 +55,8 @@ If compiling yourself. You need to generate an appsettings.json file in the proj
     "MaxFeeTokenId": 0, //The token id for the fee. 0 for ETH, 1 for LRC
     "NftFactory": "0xc852aC7aAe4b0f0a0Deb9e8A391ebA2047d80026", //Nft factory of loopring
     "Exchange": "0x0BABA1Ad5bE3a5C0a66E7ac838a129Bf948f1eA4", //Loopring Exchange address
-    "VerboseLogging": false //set to either true or false for verbose logging. default is false
+    "VerboseLogging": false, //set to either true or false for verbose logging. default is false
+    "SkipMintFeePrompt": false //set to either true or false to skip the mint fee prompt when batch minting. default is false
   }
 }
 ```
