@@ -32,10 +32,19 @@ namespace LoopMintSharp
             string eddsaSignature,
             bool verboseLogging);
 
-        Task<CollectionResult> CreateNftCollection(
+        Task<CreateCollectionResult> CreateNftCollection(
             string apiKey,
             CreateCollectionRequest createCollectionRequest,
             string apiSig,
             bool verboseLogging);
+
+        Task<CollectionResult> FindNftCollection(
+             string apiKey,
+             int limit,
+             int offset,
+             string owner,
+             string tokenAddress,
+             bool verboseLogging);
+
     }
 }

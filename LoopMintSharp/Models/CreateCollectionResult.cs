@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LoopMintSharp
 {
-    public class CollectionResult
+    public class CreateCollectionResult
     {
         public string contractAddress { get; set; }
     }
