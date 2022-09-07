@@ -5,8 +5,9 @@ using System.Globalization;
 
 if(args.Length == 0)
 {
-    Console.WriteLine("LoopMintSharp needs an argument passed from command line. You can either use -createcollection to create a collection or -mintcollection to mint to a collection");
+    Console.WriteLine("LoopMintSharp needs arguments passed from command line. You can use -createcollection to create a collection, -legacymintcollection to mint on the legacy contract,or -mintcollection to mint to a collection to the latest contract");
     Console.WriteLine("eg: LoopMintSharp -createcollection");
+    Console.WriteLine("eg: LoopMintSharp -legacymintcollection");
     Console.WriteLine("When using -mintcollection pass it the collection contract address as well:");
     Console.WriteLine("eg: LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd");
     System.Environment.Exit(0);
@@ -87,6 +88,82 @@ if(args[0] == "-createcollection")
     loopringPrivateKey,
     verboseLogging
     );
+}
+else if (args[0].Trim().StartsWith("-legacymintcollection"))
+{
+    var lineCount = File.ReadLines("cids.txt").Count();
+    var count = 0;
+
+    if (skipMintFeePrompt == false)
+    {
+        var offChainFee = await minter.GetMintFee(loopringApiKey, accountId, minterAddress, nftFactory, verboseLogging, "");
+        var fee = offChainFee.fees[maxFeeTokenId].fee;
+        double feeAmount = lineCount * Double.Parse(fee);
+        if (maxFeeTokenId == 0)
+        {
+            Console.WriteLine($"It will cost around {TokenAmountConverter.ToString(feeAmount, 18)} ETH to mint {lineCount} NFTs");
+        }
+        else if (maxFeeTokenId == 1)
+        {
+            Console.WriteLine($"It will cost around {TokenAmountConverter.ToString(feeAmount, 18)} LRC to mint {lineCount} NFTs");
+        }
+        else
+        {
+            Console.WriteLine("Can only use MaxFeeTokenId of 0 for ETH or MaxFeeTokenId of 1 for LRC. Please set this correctly in your appsettings.json file!");
+            System.Environment.Exit(0);
+        }
+
+        Console.Write("Continue with minting? Enter y for yes or n for no:");
+        string continueMinting = Console.ReadLine().Trim().ToLower();
+        while (continueMinting != "y" && continueMinting != "n")
+        {
+            Console.Write("Continue with minting? Enter y for yes or n for no:");
+            continueMinting = Console.ReadLine().Trim().ToLower();
+        }
+
+        if (continueMinting == "n")
+        {
+            Console.WriteLine("Minting cancelled!");
+            System.Environment.Exit(0);
+        }
+        else if (continueMinting == "y")
+        {
+            Console.WriteLine($"Minting started...");
+        }
+    }
+
+    List<MintResponseData> mintResponses = new List<MintResponseData>();
+    using (StreamReader sr = new StreamReader("cids.txt"))
+    {
+        string currentCid;
+        //currentCid will be null when the StreamReader reaches the end of file
+        while ((currentCid = sr.ReadLine()) != null)
+        {
+            currentCid = currentCid.Trim();
+            count++;
+            Console.WriteLine($"Attempting mint {count} out of {lineCount} NFTs");
+            var mintResponse = await minter.MintLegacyCollection(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactoryCollection, exchange, currentCid, verboseLogging);
+            mintResponses.Add(mintResponse);
+            Console.SetCursorPosition(0, Console.CursorTop - 1);
+            if (!string.IsNullOrEmpty(mintResponse.errorMessage))
+            {
+                Console.WriteLine($"Mint {count} out of {lineCount} NFTs was UNSUCCESSFUL. ERROR MESSAGE: {mintResponse.errorMessage}");
+            }
+            else
+            {
+                Console.WriteLine($"Mint {count} out of {lineCount} NFTs was SUCCESSFUL");
+            }
+        }
+    }
+
+    string csvName = $"{DateTime.Now.ToString("yyyy-mm-dd hh-mm-ss")}.csv";
+    using (var writer = new StreamWriter(csvName))
+    using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+    {
+        csv.WriteRecords(mintResponses);
+        Console.WriteLine($"Generated Mint Report");
+        Console.WriteLine($"CSV can be found in the following location: {AppDomain.CurrentDomain.BaseDirectory + csvName}");
+    }
 }
 else if (args[0].Trim().StartsWith("-mintcollection"))
 {
@@ -188,8 +265,9 @@ else if (args[0].Trim().StartsWith("-mintcollection"))
 }
 else
 {
-    Console.WriteLine("Invalid argument. You can either use -createcollection to create a collection or -mintcollection to mint to a collection");
+    Console.WriteLine("Invalid argument. You can use -createcollection to create a collection, -legacymintcollection to mint on the legacy contract,or -mintcollection to mint to a collection to the latest contract");
     Console.WriteLine("eg: LoopMintSharp -createcollection");
+    Console.WriteLine("eg: LoopMintSharp -legacymintcollection");
     Console.WriteLine("When using -mintcollection pass it the collection contract address as well:");
     Console.WriteLine("eg: LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd");
 }
