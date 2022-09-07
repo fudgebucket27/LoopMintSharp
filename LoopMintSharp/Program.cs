@@ -186,7 +186,7 @@ else if (args[0].Trim() == "-mintcollection")
     var count = 0;
 
     var collectionResult = await minter.FindNftCollection(loopringApiKey, 12, 0, minterAddress, collectionContractAddress, verboseLogging);
-    if (collectionResult.collections.Count == 0)
+    if (collectionResult == null)
     {
         Console.WriteLine($"Could not find collection with contract address {collectionContractAddress}");
         System.Environment.Exit(0);
