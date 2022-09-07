@@ -58,21 +58,21 @@ if(args[0] == "-createcollection")
 
     while (!avatar.StartsWith("Qm"))
     {
-        Console.Write("Enter avatar cid for collection:");
+        Console.Write("Enter avatar ipfs cid for collection:");
         avatar = Console.ReadLine().Trim();
     }
 
 
     while (!banner.StartsWith("Qm"))
     {
-        Console.Write("Enter banner cid for collection:");
+        Console.Write("Enter banner ipfs cid for collection:");
         banner = Console.ReadLine().Trim();
     }
 
 
     while (!tileUri.StartsWith("Qm"))
     {
-        Console.Write("Enter tileUri cid for collection:");
+        Console.Write("Enter tileUri ipfs cid for collection:");
         tileUri = Console.ReadLine().Trim();
     }
 
