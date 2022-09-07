@@ -181,7 +181,7 @@ else if (args[0].Trim() == "-mintcollection")
         System.Environment.Exit(0);
     }
 
-    var collectionContractAddress = args[1];
+    var collectionContractAddress = args[1].Trim();
     var lineCount = File.ReadLines("cids.txt").Count();
     var count = 0;
 
