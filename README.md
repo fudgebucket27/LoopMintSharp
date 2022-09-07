@@ -16,6 +16,8 @@ chmod +x LoopMintSharp
 If compiling yourself please read the section about it below.
 
 ## 1. Creating a collection
+**All commands must be done in a command line window opened in the same folder as the unzipped LoopMintSharp**
+
 Once you have setup the appsettings.json file you can call LoopMintSharp via command line as follows to create a collection
 
 ```batch
@@ -32,6 +34,8 @@ Follow the prompts for entering in the name, description, avatar, banner and til
 Be sure to save the contract address that is generated for you. You will need this for the next step.
 
 ## 2. Minting to a collection
+**All commands must be done in a command line window opened in the same folder as the unzipped LoopMintSharp**
+
 Once you have created a collection and have the contract address. Modify the included "cids.txt" file with the metadata json ipfs cids for the NFTs you intend to mint in the collection. Once you have done that you can mint to that collection with the following command, replacing *0x1ad897a7957561dc502a19b38e7e5a3b045375bd* with the contract address that was generated for you in the previous step.
 
 ```batch
@@ -44,6 +48,8 @@ macOS users:
 ```
 
 ## 3. Minting to the legacy contract
+**All commands must be done in a command line window opened in the same folder as the unzipped LoopMintSharp**
+
 Before the introduction of collections, all NFTs on Loopring fell under one contract. This is now considered legacy. If need be you can also mint to this legacy contract. Modify the included "cids.txt" file with the metadata json ipfs cids for the NFTs you intend to mint in the legacy contract. Once you have done that you can mint to the legacy contract with the following command.
 
 ```batch
