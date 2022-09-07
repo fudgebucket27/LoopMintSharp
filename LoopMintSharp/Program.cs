@@ -3,16 +3,22 @@ using Microsoft.Extensions.Configuration;
 using CsvHelper;
 using System.Globalization;
 
+if(args.Length == 0)
+{
+    Console.WriteLine("LoopMintSharp needs an argument passed from command line. You can either use -createcollection or -mintcollection as arguments");
+    Console.WriteLine("eg: LoopMintSharp -createcollection");
+    Console.WriteLine("When using -mintcollection pass it the collection contract address:");
+    Console.WriteLine("eg: LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd");
+    System.Environment.Exit(0);
+}
 
-#region Initial Setup
+//Changes these variables to suit
 IConfiguration config = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json")
     .AddEnvironmentVariables()
     .Build();
 Settings settings = config.GetRequiredSection("Settings").Get<Settings>();
-
-//Changes these variables to suit
-var ipfsCid = args[0]; //command line argument, can be the ipfs cid of your metadata.json or a .txt file containing all of your ipfs cids on each line
+Minter minter = new Minter();
 string loopringApiKey = settings.LoopringApiKey;//you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 string loopringPrivateKey = settings.LoopringPrivateKey; //you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 var minterAddress = settings.LoopringAddress; //your loopring address
@@ -27,25 +33,8 @@ var nftFactoryCollection = settings.NftFactoryCollection; //nft collection facto
 var exchange = settings.Exchange; //loopring exchange address, shouldn't need to change this,
 var verboseLogging = settings.VerboseLogging; //setting for verbose logging
 var skipMintFeePrompt = settings.SkipMintFeePrompt; //setting for mint fee prompt when batch minting
-#endregion
 
-Minter minter = new Minter();
-#region Single Mint
-if (!ipfsCid.Contains(".txt") && ipfsCid.StartsWith("Qm")) //Single Mint
-{
-    Console.WriteLine("Attempting mint 1 out of 1 NFTs");
-    var mintResponse = await minter.Mint(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactory, exchange, ipfsCid, verboseLogging);
-    Console.SetCursorPosition(0, Console.CursorTop - 1);
-    if (!string.IsNullOrEmpty(mintResponse.errorMessage))
-    {
-        Console.WriteLine($"Mint 1 out of 1 NFTs was UNSUCCESSFUL. ERROR MESSAGE: {mintResponse.errorMessage}");
-    }
-    else
-    {
-        Console.WriteLine($"Mint 1 out of 1 NFTs was SUCCESSFUL");
-    }
-}
-else if(ipfsCid == "createcollection")
+if(args[0] == "-createcollection")
 {
     var name = "";
     var description = "";
@@ -99,12 +88,24 @@ else if(ipfsCid == "createcollection")
     verboseLogging
     );
 }
-else if (ipfsCid.Trim().StartsWith("batchmintcollection"))
+else if (args[0].Trim().StartsWith("-mintcollection"))
 {
-    var arguments = ipfsCid.Split(' ');
-    var collectionContractAddress = arguments[1];
-    var cidsFile = arguments[2];
-    var lineCount = File.ReadLines(cidsFile).Count();
+    if(args.Length != 2)
+    {
+        Console.WriteLine("This argument -mintcollection needs a collection contract address!");
+        Console.WriteLine("eg: LoopMintSharp --mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd");
+        System.Environment.Exit(0);
+    }
+
+    if(!args[1].Trim().StartsWith("0x"))
+    {
+        Console.WriteLine("This argument -mintcollection needs a VALID collection contract address!");
+        Console.WriteLine("eg: LoopMintSharp --mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd");
+        System.Environment.Exit(0);
+    }
+
+    var collectionContractAddress = args[1];
+    var lineCount = File.ReadLines("cids.txt").Count();
     var count = 0;
 
     var collectionResult = await minter.FindNftCollection(loopringApiKey, 12, 0, minterAddress, collectionContractAddress, verboseLogging);
@@ -153,12 +154,13 @@ else if (ipfsCid.Trim().StartsWith("batchmintcollection"))
     }
 
     List<MintResponseData> mintResponses = new List<MintResponseData>();
-    using (StreamReader sr = new StreamReader(cidsFile))
+    using (StreamReader sr = new StreamReader("cids.txt"))
     {
         string currentCid;
         //currentCid will be null when the StreamReader reaches the end of file
         while ((currentCid = sr.ReadLine()) != null)
         {
+            currentCid = currentCid.Trim();
             count++;
             Console.WriteLine($"Attempting mint {count} out of {lineCount} NFTs");
             var mintResponse = await minter.MintCollection(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactoryCollection, exchange, currentCid, verboseLogging, collectionResult.collections[0].collection.baseUri, collectionContractAddress);
@@ -175,7 +177,6 @@ else if (ipfsCid.Trim().StartsWith("batchmintcollection"))
         }
     }
 
-    #region Create csv report
     string csvName = $"{DateTime.Now.ToString("yyyy-mm-dd hh-mm-ss")}.csv";
     using (var writer = new StreamWriter(csvName))
     using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
@@ -184,90 +185,11 @@ else if (ipfsCid.Trim().StartsWith("batchmintcollection"))
         Console.WriteLine($"Generated Mint Report");
         Console.WriteLine($"CSV can be found in the following location: {AppDomain.CurrentDomain.BaseDirectory + csvName}");
     }
-    #endregion
-
 }
-#endregion
-#region Batch Mint
-else //Batch mint from text file
+else
 {
-    var lineCount = File.ReadLines(ipfsCid).Count();
-    var count = 0;
-
-    if(skipMintFeePrompt == false)
-    {
-        var offChainFee = await minter.GetMintFee(loopringApiKey, accountId, minterAddress, nftFactory, verboseLogging);
-        var fee = offChainFee.fees[maxFeeTokenId].fee;
-        double feeAmount = lineCount * Double.Parse(fee);
-        if (maxFeeTokenId == 0)
-        {
-            Console.WriteLine($"It will cost around {TokenAmountConverter.ToString(feeAmount, 18)} ETH to mint {lineCount} NFTs");
-        }
-        else if (maxFeeTokenId == 1)
-        {
-            Console.WriteLine($"It will cost around {TokenAmountConverter.ToString(feeAmount, 18)} LRC to mint {lineCount} NFTs");
-        }
-        else
-        {
-            Console.WriteLine("Can only use MaxFeeTokenId of 0 for ETH or MaxFeeTokenId of 1 for LRC. Please set this correctly in your appsettings.json file!");
-            System.Environment.Exit(0);
-        }
-
-        Console.Write("Continue with minting? Enter y for yes or n for no:");
-        string continueMinting = Console.ReadLine().Trim().ToLower();
-        while (continueMinting != "y" && continueMinting != "n")
-        {
-            Console.Write("Continue with minting? Enter y for yes or n for no:");
-            continueMinting = Console.ReadLine().Trim().ToLower();
-        }
-
-        if (continueMinting == "n")
-        {
-            Console.WriteLine("Minting cancelled!");
-            System.Environment.Exit(0);
-        }
-        else if (continueMinting == "y")
-        {
-            Console.WriteLine("Minting started...");
-        }
-    }
-
-    List<MintResponseData> mintResponses = new List<MintResponseData>();
-    using (StreamReader sr = new StreamReader(ipfsCid))
-    {
-        string currentCid;
-        //currentCid will be null when the StreamReader reaches the end of file
-        while ((currentCid = sr.ReadLine()) != null)
-        {
-            count++;
-            Console.WriteLine($"Attempting mint {count} out of {lineCount} NFTs");
-            var mintResponse = await minter.Mint(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactory, exchange, currentCid, verboseLogging);
-            mintResponses.Add(mintResponse);
-            Console.SetCursorPosition(0, Console.CursorTop - 1);
-            if (!string.IsNullOrEmpty(mintResponse.errorMessage))
-            {
-                Console.WriteLine($"Mint {count} out of {lineCount} NFTs was UNSUCCESSFUL. ERROR MESSAGE: {mintResponse.errorMessage}");
-            }
-            else
-            {
-                Console.WriteLine($"Mint {count} out of {lineCount} NFTs was SUCCESSFUL");
-            }
-        }
-    }
-
-    #region Create csv report
-    string csvName = $"{DateTime.Now.ToString("yyyy-mm-dd hh-mm-ss")}.csv";
-    using (var writer = new StreamWriter(csvName))
-    using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-    {
-        csv.WriteRecords(mintResponses);
-        Console.WriteLine($"Generated Mint Report");
-        Console.WriteLine($"CSV can be found in the following location: {AppDomain.CurrentDomain.BaseDirectory + csvName}");
-    }
-    #endregion
+    Console.WriteLine("Invalid argument. You can either use -createcollection or -mintcollection as arguments");
+    Console.WriteLine("eg: LoopMintSharp -createcollection");
+    Console.WriteLine("When using -mintcollection pass it the collection contract address:");
+    Console.WriteLine("eg: LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd");
 }
-#endregion
-
-
-
-

@@ -98,7 +98,7 @@ namespace LoopMintSharp
             var collectionResult = await loopringMintService.CreateNftCollection(apiKey, createCollectionRequest, sha256Signed, verboseLogging);
             if (!string.IsNullOrEmpty(collectionResult.contractAddress))
             {
-                Console.WriteLine($"Collection with Name:{name}, created with Contract Address: {collectionResult.contractAddress}");
+                Console.WriteLine($"Collection with Name:{name}, created with Collection Contract Address: {collectionResult.contractAddress}");
             }
             return collectionResult;
         }
