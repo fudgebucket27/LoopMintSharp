@@ -80,5 +80,5 @@ If compiling yourself. You need to generate an appsettings.json file in the proj
 ```
 You will also need to supply command line arguments via your IDE.
 
-# Video Tutorial
+# Video Tutorial for Version 2 and below
 Here is a video tutorial on how to use LoopMintSharp for single mint use on version 2 and below: https://www.youtube.com/watch?v=yYlaKdXIcuQ Thanks To @BimboSlice5 on Twitter! 
