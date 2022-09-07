@@ -35,7 +35,7 @@ var exchange = settings.Exchange; //loopring exchange address, shouldn't need to
 var verboseLogging = settings.VerboseLogging; //setting for verbose logging
 var skipMintFeePrompt = settings.SkipMintFeePrompt; //setting for mint fee prompt when batch minting
 
-if(args[0] == "-createcollection")
+if(args[0].Trim() == "-createcollection")
 {
     var name = "";
     var description = "";
@@ -89,7 +89,7 @@ if(args[0] == "-createcollection")
     verboseLogging
     );
 }
-else if (args[0].Trim().StartsWith("-legacymintcollection"))
+else if (args[0].Trim() == "-legacymintcollection" )
 {
     var lineCount = File.ReadLines("cids.txt").Count();
     var count = 0;
@@ -165,7 +165,7 @@ else if (args[0].Trim().StartsWith("-legacymintcollection"))
         Console.WriteLine($"CSV can be found in the following location: {AppDomain.CurrentDomain.BaseDirectory + csvName}");
     }
 }
-else if (args[0].Trim().StartsWith("-mintcollection"))
+else if (args[0].Trim() == "-mintcollection")
 {
     if(args.Length != 2)
     {
