@@ -18,6 +18,8 @@ namespace LoopMintSharp
         public long ValidUntil { get; set; }
         public int MaxFeeTokenId { get; set; }
         public string NftFactory { get; set; }
+
+        public string NftFactoryCollection { get; set; }
         public string Exchange { get; set; }
         public bool VerboseLogging { get;set;}
 

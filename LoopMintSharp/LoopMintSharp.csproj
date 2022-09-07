@@ -11,17 +11,21 @@
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="27.2.1" />
+    <PackageReference Include="JsonFlatten" Version="1.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
     <PackageReference Include="Multiformats.Hash" Version="1.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="PoseidonSharp" Version="1.0.0" />
-    <PackageReference Include="RestSharp" Version="107.3.0" />
+    <PackageReference Include="RestSharp" Version="108.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="cids.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

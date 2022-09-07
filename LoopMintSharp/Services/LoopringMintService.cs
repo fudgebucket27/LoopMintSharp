@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using JsonFlatten;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -33,7 +35,10 @@ namespace LoopMintSharp
             }
             catch (HttpRequestException httpException)
             {
-                Console.WriteLine($"Error getting storage id: {httpException.Message}");
+                if (verboseLogging)
+                {
+                    Console.WriteLine($"Error getting storage id: {httpException.Message}");
+                }
                 return null;
             }
         }
@@ -53,7 +58,10 @@ namespace LoopMintSharp
             }
             catch (HttpRequestException httpException)
             {
-                Console.WriteLine($"Error getting computing token address: {httpException.Message}");
+                if (verboseLogging)
+                {
+                    Console.WriteLine($"Error getting computing token address: {httpException.Message}");
+                }
                 return null;
             }
         }
@@ -153,6 +161,71 @@ namespace LoopMintSharp
         {
             _client?.Dispose();
             GC.SuppressFinalize(this);
+        }
+
+        public async Task<CreateCollectionResult> CreateNftCollection(
+            string apiKey, 
+            CreateCollectionRequest createCollectionRequest,
+            string apiSig,
+            bool verboseLogging)
+        {
+            var request = new RestRequest("api/v3/nft/collection", Method.Post);
+            request.AddHeader("x-api-key", apiKey);
+            request.AddHeader("x-api-sig", apiSig);
+            request.AddHeader("Accept", "application/json");
+            var jObject = JObject.Parse(JsonConvert.SerializeObject(createCollectionRequest));
+            var jObjectFlattened = jObject.Flatten();
+            var jObjectFlattenedString = JsonConvert.SerializeObject(jObjectFlattened);
+            request.AddParameter("application/json", jObjectFlattenedString, ParameterType.RequestBody);
+
+            try
+            {
+                var response = await _client.ExecuteAsync(request);
+                var data = JsonConvert.DeserializeObject<CreateCollectionResult>(response.Content!);
+                if (!response.IsSuccessful && verboseLogging)
+                {
+                    Console.WriteLine($"Error creating nft collection: {response.Content}");
+                }
+                else if (!response.IsSuccessful)
+                {
+                    Console.WriteLine($"Error creating nft collection: {response.Content}");
+                }
+                return data;
+            }
+            catch (HttpRequestException httpException)
+            {
+                var data = new MintResponseData();
+                if (verboseLogging)
+                {
+                    Console.WriteLine($"Error creating nft collection!: {httpException.Message}");
+                }
+                data.errorMessage = httpException.Message;
+                return null;
+            }
+        }
+
+        public async Task<CollectionResult> FindNftCollection(string apiKey, int limit, int offset, string owner, string tokenAddress, bool verboseLogging)
+        {
+            var request = new RestRequest("api/v3/nft/collection");
+            request.AddHeader("x-api-key", apiKey);
+            request.AddParameter("limit", limit.ToString());
+            request.AddParameter("offset", offset.ToString());
+            request.AddParameter("owner", owner);
+            request.AddParameter("tokenAddress", tokenAddress);
+            try
+            {
+                var response = await _client.GetAsync(request);
+                var data = JsonConvert.DeserializeObject<CollectionResult>(response.Content!);
+                return data;
+            }
+            catch (HttpRequestException httpException)
+            {
+                if (verboseLogging)
+                {
+                    Console.WriteLine($"Error finding collection: {httpException.Message}");
+                }
+                return null;
+            }
         }
     }
 }
