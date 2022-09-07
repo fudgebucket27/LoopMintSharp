@@ -12,7 +12,7 @@ IConfiguration config = new ConfigurationBuilder()
 Settings settings = config.GetRequiredSection("Settings").Get<Settings>();
 
 //Changes these variables to suit
-var ipfsCid = ""; //command line argument, can be the ipfs cid of your metadata.json or a .txt file containing all of your ipfs cids on each line
+var ipfsCid = "createcollection"; //command line argument, can be the ipfs cid of your metadata.json or a .txt file containing all of your ipfs cids on each line
 string loopringApiKey = settings.LoopringApiKey;//you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 string loopringPrivateKey = settings.LoopringPrivateKey; //you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 var minterAddress = settings.LoopringAddress; //your loopring address
@@ -30,21 +30,6 @@ var skipMintFeePrompt = settings.SkipMintFeePrompt; //setting for mint fee promp
 #endregion
 
 Minter minter = new Minter();
-var collectionResult = await minter.CreateNftCollection(
-    loopringApiKey,
-    "ipfs://Qmc6x1MhvfC2XxrqcBeRbtPqKpB8CYHxMo2kxhiUxpCwZ2",
-    "ipfs://Qmc6x1MhvfC2XxrqcBeRbtPqKpB8CYHxMo2kxhiUxpCwZ2",
-    "test 8",
-    "testing 9",
-    nftFactoryCollection,
-    minterAddress,
-    "ipfs://Qmc6x1MhvfC2XxrqcBeRbtPqKpB8CYHxMo2kxhiUxpCwZ2",
-    loopringPrivateKey,
-    verboseLogging
-    );
-
-System.Environment.Exit(0);
-
 #region Single Mint
 if (!ipfsCid.Contains(".txt") && ipfsCid.StartsWith("Qm")) //Single Mint
 {
@@ -59,6 +44,60 @@ if (!ipfsCid.Contains(".txt") && ipfsCid.StartsWith("Qm")) //Single Mint
     {
         Console.WriteLine($"Mint 1 out of 1 NFTs was SUCCESSFUL");
     }
+}
+else if(ipfsCid == "createcollection")
+{
+    var name = "";
+    var description = "";
+    var avatar = "";
+    var banner = "";
+    var tileUri = "";
+
+    while(string.IsNullOrEmpty(name))
+    {
+        Console.Write("Enter name for collection:");
+        name = Console.ReadLine().Trim();
+    }
+
+    while (string.IsNullOrEmpty(description))
+    {
+        Console.Write("Enter description for collection:");
+        description = Console.ReadLine().Trim();
+    }
+
+
+    while (!avatar.StartsWith("Qm"))
+    {
+        Console.Write("Enter avatar cid for collection:");
+        avatar = Console.ReadLine().Trim();
+    }
+
+
+    while (!banner.StartsWith("Qm"))
+    {
+        Console.Write("Enter banner cid for collection:");
+        banner = Console.ReadLine().Trim();
+    }
+
+
+    while (!tileUri.StartsWith("Qm"))
+    {
+        Console.Write("Enter tileUri cid for collection:");
+        tileUri = Console.ReadLine().Trim();
+    }
+
+    var collectionResult = await minter.CreateNftCollection(
+    loopringApiKey,
+    "ipfs://" + avatar,
+    "ipfs://" + banner,
+    description,
+    name,
+    nftFactoryCollection,
+    minterAddress,
+    "ipfs://" + tileUri,
+    loopringPrivateKey,
+    verboseLogging
+    );
 }
 #endregion
 #region Batch Mint

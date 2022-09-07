@@ -75,7 +75,10 @@ namespace LoopMintSharp
             var sha256Signer = new Eddsa(sha256Number, loopringPrivateKey);
             var sha256Signed = sha256Signer.Sign();
             var collectionResult = await loopringMintService.CreateNftCollection(apiKey, createCollectionRequest, sha256Signed, verboseLogging);
-            Console.WriteLine($"Collection with Name:{name}, created with Contract Address: {collectionResult.contractAddress}");
+            if (!string.IsNullOrEmpty(collectionResult.contractAddress))
+            {
+                Console.WriteLine($"Collection with Name:{name}, created with Contract Address: {collectionResult.contractAddress}");
+            }
             return collectionResult;
         }
 
