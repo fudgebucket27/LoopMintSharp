@@ -1,5 +1,7 @@
-﻿using Multiformats.Hash;
+﻿using JsonFlatten;
+using Multiformats.Hash;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PoseidonSharp;
 using System;
 using System.Collections.Generic;
@@ -11,9 +13,8 @@ using System.Threading.Tasks;
 namespace LoopMintSharp
 {
     public class Minter
-
-
     {
+        static ILoopringMintService loopringMintService = new LoopringMintService();
         public async Task<OffchainFee> GetMintFee(
             string loopringApiKey,
             int accountId,
@@ -29,10 +30,53 @@ namespace LoopMintSharp
                 nftFactory = nftFactory,
                 nftBaseUri = "" //this aint used in the api as far as i can tell. for future use
             };
-            ILoopringMintService loopringMintService = new LoopringMintService();
             var counterFactualNft = await loopringMintService.ComputeTokenAddress(loopringApiKey, counterFactualNftInfo, verboseLogging);
             var mintFee = await loopringMintService.GetOffChainFee(loopringApiKey, accountId, 9, counterFactualNft.tokenAddress, verboseLogging);
             return mintFee;
+        }
+
+        public async Task<CollectionResult> CreateNftCollection(
+            string apiKey,
+            string avatar,
+            string banner,
+            string description,
+            string name,
+            string nftFactory,
+            string owner,
+            string tileUri,
+            string loopringPrivateKey,
+            bool verboseLogging)
+        {
+            CreateCollectionRequest createCollectionRequest = new CreateCollectionRequest()
+            {
+                avatar = avatar,
+                banner = banner,
+                description = description,
+                name = name,
+                nftFactory = nftFactory,
+                owner = owner,
+                tileUri = tileUri
+            };
+            Dictionary<string, object> dataToSig = new Dictionary<string, object>();
+            dataToSig.Add("avatar", avatar);
+            dataToSig.Add("banner", banner);
+            dataToSig.Add("description", description);
+            dataToSig.Add("name", name);
+            dataToSig.Add("nftFactory", nftFactory);
+            dataToSig.Add("owner", owner);
+            dataToSig.Add("tileUri", tileUri);
+            var signatureBase = "POST&";
+            var jObject = JObject.Parse(JsonConvert.SerializeObject(dataToSig));
+            var jObjectFlattened = jObject.Flatten();
+            var parameterString = JsonConvert.SerializeObject(jObjectFlattened);
+            signatureBase += Utils.UrlEncodeUpperCase("https://api3.loopring.io/api/v3/nft/collection") + "&";
+            signatureBase += Utils.UrlEncodeUpperCase(parameterString);
+            var sha256Number = SHA256Helper.CalculateSHA256HashNumber(signatureBase);
+            var sha256Signer = new Eddsa(sha256Number, loopringPrivateKey);
+            var sha256Signed = sha256Signer.Sign();
+            var collectionResult = await loopringMintService.CreateNftCollection(apiKey, createCollectionRequest, sha256Signed, verboseLogging);
+            Console.WriteLine($"Collection with Name:{name}, created with Contract Address: {collectionResult.contractAddress}");
+            return collectionResult;
         }
 
         public async Task<MintResponseData> Mint(string loopringApiKey,
@@ -51,7 +95,6 @@ namespace LoopMintSharp
         {
             #region Get storage id, token address and offchain fee
             //Getting the storage id
-            ILoopringMintService loopringMintService = new LoopringMintService();
             var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, maxFeeTokenId, verboseLogging);
             if(verboseLogging)
             {

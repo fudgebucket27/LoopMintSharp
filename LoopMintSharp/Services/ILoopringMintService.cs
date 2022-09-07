@@ -12,24 +12,30 @@ namespace LoopMintSharp
         Task<CounterFactualNft> ComputeTokenAddress(string apiKey, CounterFactualNftInfo counterFactualNftInfo, bool verboseLogging);
         Task<OffchainFee> GetOffChainFee(string apiKey, int accountId, int requestType, string tokenAddress, bool verboseLogging);
         Task<MintResponseData> MintNft(
-            string apiKey, 
-            string exchange, 
-            int minterId, 
-            string minterAddress, 
-            int toAccountId, 
+            string apiKey,
+            string exchange,
+            int minterId,
+            string minterAddress,
+            int toAccountId,
             string toAddress,
-            int nftType, 
-            string tokenAddress, 
+            int nftType,
+            string tokenAddress,
             string nftId,
-            string amount, 
-            long validUntil, 
-            int royaltyPercentage, 
-            int storageId, 
-            int maxFeeTokenId, 
-            string maxFeeAmount, 
-            bool forceToMint, 
+            string amount,
+            long validUntil,
+            int royaltyPercentage,
+            int storageId,
+            int maxFeeTokenId,
+            string maxFeeAmount,
+            bool forceToMint,
             CounterFactualNftInfo counterFactualNftInfo,
-            string eddsaSignature, 
+            string eddsaSignature,
+            bool verboseLogging);
+
+        Task<CollectionResult> CreateNftCollection(
+            string apiKey,
+            CreateCollectionRequest createCollectionRequest,
+            string apiSig,
             bool verboseLogging);
     }
 }

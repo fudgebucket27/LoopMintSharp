@@ -12,7 +12,7 @@ IConfiguration config = new ConfigurationBuilder()
 Settings settings = config.GetRequiredSection("Settings").Get<Settings>();
 
 //Changes these variables to suit
-var ipfsCid = args[0]; //command line argument, can be the ipfs cid of your metadata.json or a .txt file containing all of your ipfs cids on each line
+var ipfsCid = ""; //command line argument, can be the ipfs cid of your metadata.json or a .txt file containing all of your ipfs cids on each line
 string loopringApiKey = settings.LoopringApiKey;//you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 string loopringPrivateKey = settings.LoopringPrivateKey; //you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 var minterAddress = settings.LoopringAddress; //your loopring address
@@ -23,12 +23,28 @@ var nftAmount = settings.NftAmount; //leave this to one so you only mint 1
 var validUntil = settings.ValidUntil; //the examples seem to use this number
 var maxFeeTokenId = settings.MaxFeeTokenId; //0 should be for ETH, 1 is for LRC?
 var nftFactory = settings.NftFactory; //current nft factory of loopring, shouldn't need to change unless they deploye a new contract again, sigh...
+var nftFactoryCollection = settings.NftFactoryCollection; //nft collection factory for loopring
 var exchange = settings.Exchange; //loopring exchange address, shouldn't need to change this,
 var verboseLogging = settings.VerboseLogging; //setting for verbose logging
 var skipMintFeePrompt = settings.SkipMintFeePrompt; //setting for mint fee prompt when batch minting
 #endregion
 
 Minter minter = new Minter();
+var collectionResult = await minter.CreateNftCollection(
+    loopringApiKey,
+    "ipfs://Qmc6x1MhvfC2XxrqcBeRbtPqKpB8CYHxMo2kxhiUxpCwZ2",
+    "ipfs://Qmc6x1MhvfC2XxrqcBeRbtPqKpB8CYHxMo2kxhiUxpCwZ2",
+    "test",
+    "testing6",
+    nftFactoryCollection,
+    minterAddress,
+    "ipfs://Qmc6x1MhvfC2XxrqcBeRbtPqKpB8CYHxMo2kxhiUxpCwZ2",
+    loopringPrivateKey,
+    verboseLogging
+    );
+
+System.Environment.Exit(0);
+
 #region Single Mint
 if (!ipfsCid.Contains(".txt") && ipfsCid.StartsWith("Qm")) //Single Mint
 {
