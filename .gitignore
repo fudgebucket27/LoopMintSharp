@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 LoopMintSharp/appsettings.json
+/LoopMintSharp/Properties/launchSettings.json

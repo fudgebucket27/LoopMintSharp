@@ -128,7 +128,7 @@ else if (args[0].Trim().StartsWith("-legacymintcollection"))
         }
         else if (continueMinting == "y")
         {
-            Console.WriteLine($"Minting started...");
+            Console.WriteLine($"Minting started on legacy contract...");
         }
     }
 
@@ -142,7 +142,7 @@ else if (args[0].Trim().StartsWith("-legacymintcollection"))
             currentCid = currentCid.Trim();
             count++;
             Console.WriteLine($"Attempting mint {count} out of {lineCount} NFTs");
-            var mintResponse = await minter.MintLegacyCollection(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactoryCollection, exchange, currentCid, verboseLogging);
+            var mintResponse = await minter.MintLegacyCollection(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactory, exchange, currentCid, verboseLogging);
             mintResponses.Add(mintResponse);
             Console.SetCursorPosition(0, Console.CursorTop - 1);
             if (!string.IsNullOrEmpty(mintResponse.errorMessage))
