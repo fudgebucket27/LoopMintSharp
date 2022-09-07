@@ -70,7 +70,7 @@ namespace LoopMintSharp
             var jObjectFlattened = jObject.Flatten();
             var parameterString = JsonConvert.SerializeObject(jObjectFlattened);
             signatureBase += Utils.UrlEncodeUpperCase("https://api3.loopring.io/api/v3/nft/collection") + "&";
-            signatureBase += Utils.UrlEncodeUpperCase(parameterString);
+            signatureBase += Uri.EscapeDataString(parameterString);
             var sha256Number = SHA256Helper.CalculateSHA256HashNumber(signatureBase);
             var sha256Signer = new Eddsa(sha256Number, loopringPrivateKey);
             var sha256Signed = sha256Signer.Sign();
