@@ -265,7 +265,7 @@ else if (args[0].Trim().StartsWith("-mintcollection"))
 }
 else
 {
-    Console.WriteLine("Invalid argument. You can use -createcollection to create a collection, -legacymintcollection to mint on the legacy contract,or -mintcollection to mint to a collection to the latest contract");
+    Console.WriteLine("Invalid arguments. You can use -createcollection to create a collection, -legacymintcollection to mint on the legacy contract,or -mintcollection to mint to a collection to the latest contract");
     Console.WriteLine("eg: LoopMintSharp -createcollection");
     Console.WriteLine("eg: LoopMintSharp -legacymintcollection");
     Console.WriteLine("When using -mintcollection pass it the collection contract address as well:");
