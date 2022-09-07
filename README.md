@@ -15,27 +15,44 @@ chmod +x LoopMintSharp
 ```
 If compiling yourself please read the section about it below.
 
-## Single Mint
-Once you have setup the appsettings.json file you can call LoopMintSharp via command line as follows, where the first argument is the IPFS CID of your metadata.json file:
+## 1. Creating a collection
+Once you have setup the appsettings.json file you can call LoopMintSharp via command line as follows to create a collection
 
 ```batch
-LoopMintSharp QmWG5QL4MbDux8Dtb1AkijMH73fFnuUDumMxVkQw6YFyBE
+LoopMintSharp -createcollection
 ```
 
 macOS users: 
 ```batch
-./LoopMintSharp QmWG5QL4MbDux8Dtb1AkijMH73fFnuUDumMxVkQw6YFyBE
+./LoopMintSharp -createcollection
 ```
 
-## Batch mint
-You can also batch mint! You need to create a .txt file with all of your metadata.json IPFS CIDs on each line. Once you have created the .txt file just pass its full file path to LoopMintSharp like below. A csv report of the mint results will also be created after the minting is done.
+Follow the prompts for entering in the name, description, avatar, banner and tileUri. Loopring recommends 500x500 for avatar, 1500x500 for banner, 500x700 for tileUri images.
+
+Be sure to save the contract address that is generated for you. You will need this for the next step.
+
+## 2. Minting to a collection
+Once you have created a collection and have the contract address. Modify the included "cids.txt" file with the metadata json ipfs cids for the NFTs you intend to mint in the collection. Once you have done that you can mint to that collection with the following command, replacing *0x1ad897a7957561dc502a19b38e7e5a3b045375bd* with the contract address that was generated for you in the previous step.
+
 ```batch
-LoopMintSharp C:\temp\cids.txt
+LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd
 ```
 
 macOS users: 
 ```batch
-./LoopMintSharp /users/user/docs/cids.txt
+./LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd
+```
+
+## 3. Minting to the legacy contract
+Before the introduction of collections, all NFTs on Loopring fell under one contract. This is now considered legacy. If need be you can also mint to this legacy contract. Modify the included "cids.txt" file with the metadata json ipfs cids for the NFTs you intend to mint in the legacy contract. Once you have done that you can mint to the legacy contract with the following command.
+
+```batch
+LoopMintSharp -legacymintcollection
+```
+
+macOS users: 
+```batch
+./LoopMintSharp -legacymintcollection
 ```
 
 # Compiling yourself
@@ -44,23 +61,24 @@ If compiling yourself. You need to generate an appsettings.json file in the proj
 ```json
 {
   "Settings": {
-    "LoopringApiKey": "Your Api Key Here", //Your loopring api key
-    "LoopringPrivateKey": "Your Private Key Here", //Your loopring private key
-    "LoopringAddress": "Your loopring address here", //Your loopring address (NOT YOUR ENS)
+    "LoopringApiKey": "kd", //Your loopring api key
+    "LoopringPrivateKey": "0x", //Your loopring private key
+    "LoopringAddress": "0x", //Your loopring address
     "LoopringAccountId": 40940, //Your loopring account id 
     "NftAmount": 1, //Amount of NFTs to mint, number between 1 - 10 000
-    "NftRoyaltyPercentage": 6, //Nft royalty percentage can be between 1% - 10%
+    "NftRoyaltyPercentage": 6, //Nft royalty percentage can be between 0% - 50%
     "NftType": 0, //Nft type. 0 = ERC1155, 1 = ERC721
     "ValidUntil": 1700000000, //How long this mint should be valid for. Shouldn't have to change this value
-    "MaxFeeTokenId": 0, //The token id for the fee. 0 for ETH, 1 for LRC
+    "MaxFeeTokenId": 1, //The token id for the fee. 0 for ETH, 1 for LRC
     "NftFactory": "0xc852aC7aAe4b0f0a0Deb9e8A391ebA2047d80026", //Nft factory of loopring
+    "NftFactoryCollection": "0x97BE94250AEF1Df307749aFAeD27f9bc8aB911db", //Nft factory for collections on loopring 
     "Exchange": "0x0BABA1Ad5bE3a5C0a66E7ac838a129Bf948f1eA4", //Loopring Exchange address
     "VerboseLogging": false, //set to either true or false for verbose logging. default is false
     "SkipMintFeePrompt": false //set to either true or false to skip the mint fee prompt when batch minting. default is false
   }
 }
 ```
-You will also need to supply a command line argument for the ipfs cid(single mint)/ipfs cid text file path(for batch minting) or just put it in the code directly(line 15).
+You will also need to supply command line arguments via your IDE.
 
 # Video Tutorial
-Here is a video tutorial on how to use LoopMintSharp for single mint use: https://www.youtube.com/watch?v=yYlaKdXIcuQ Thanks To @BimboSlice5 on Twitter! 
+Here is a video tutorial on how to use LoopMintSharp for single mint use on version 2 and below: https://www.youtube.com/watch?v=yYlaKdXIcuQ Thanks To @BimboSlice5 on Twitter! 
