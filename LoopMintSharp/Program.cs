@@ -5,7 +5,7 @@ using System.Globalization;
 
 if(args.Length == 0)
 {
-    Console.WriteLine("LoopMintSharp needs an argument passed from command line. You can either use -createcollection to create a collection or -mintcollection to mint to a collection, as arguments");
+    Console.WriteLine("LoopMintSharp needs an argument passed from command line. You can either use -createcollection to create a collection or -mintcollection to mint to a collection");
     Console.WriteLine("eg: LoopMintSharp -createcollection");
     Console.WriteLine("When using -mintcollection pass it the collection contract address as well:");
     Console.WriteLine("eg: LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd");
@@ -188,7 +188,7 @@ else if (args[0].Trim().StartsWith("-mintcollection"))
 }
 else
 {
-    Console.WriteLine("Invalid argument. You can either use -createcollection to create a collection or -mintcollection to mint to a collection, as arguments");
+    Console.WriteLine("Invalid argument. You can either use -createcollection to create a collection or -mintcollection to mint to a collection");
     Console.WriteLine("eg: LoopMintSharp -createcollection");
     Console.WriteLine("When using -mintcollection pass it the collection contract address as well:");
     Console.WriteLine("eg: LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd");
