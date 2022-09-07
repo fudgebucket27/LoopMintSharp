@@ -181,12 +181,12 @@ else if (args[0].Trim() == "-mintcollection")
         System.Environment.Exit(0);
     }
 
-    var collectionContractAddress = args[1];
+    var collectionContractAddress = args[1].Trim();
     var lineCount = File.ReadLines("cids.txt").Count();
     var count = 0;
 
     var collectionResult = await minter.FindNftCollection(loopringApiKey, 12, 0, minterAddress, collectionContractAddress, verboseLogging);
-    if (collectionResult.collections.Count == 0)
+    if (collectionResult == null)
     {
         Console.WriteLine($"Could not find collection with contract address {collectionContractAddress}");
         System.Environment.Exit(0);
