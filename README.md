@@ -17,7 +17,9 @@ chmod +x LoopMintSharp
 ```
 If compiling yourself please read the section about it below.
 
-The following instructions in this README are for version 3 and above. For version 2 and below [see this](#video-tutorial-for-version-2-and-below).
+The following instructions in this README are for version 3 and above. For version 3 and above you can also follow the [video tutorial](https://www.youtube.com/watch?v=B6JnNo1WXyY)
+
+For version 2 and below [see this](#video-tutorial-for-version-2-and-below).
 
 ## 1. Creating a collection
 **All commands must be done in a command line window opened in the same folder as the unzipped LoopMintSharp**
@@ -91,4 +93,7 @@ If compiling yourself. You need to generate an appsettings.json file in the proj
 You will also need to supply command line arguments via your IDE.
 
 # Video Tutorial for Version 2 and below
-Here is a video tutorial on how to use LoopMintSharp for single mint use on version 2 and below: https://www.youtube.com/watch?v=yYlaKdXIcuQ Thanks To @BimboSlice5 on Twitter! 
+Here is a video tutorial on how to use LoopMintSharp v2 for single mint use on version 2 and below: https://www.youtube.com/watch?v=yYlaKdXIcuQ Thanks To @BimboSlice5 on Twitter! 
+
+# Video Tutorial for Version 3 and above
+Here is a video tutorial on how to use LoopMintSharp v3 and above: https://www.youtube.com/watch?v=B6JnNo1WXyY
