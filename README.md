@@ -5,6 +5,8 @@ This is a Console App on .NET 6. To build and compile this yourself you need som
 
 I suggest downloading one of the compiled releases.
 
+**LoopMintSharp is purely for minting NFTs on Loopring once the images and metadata have all been generated. If you want a full end to end solution for Loopring, I recommend [LooPyGen](https://github.com/sk33z3r/LooPyGen)**
+
 # Setup 
 Download one of the compiled releases in the [Releases](https://github.com/fudgebucket27/LoopMintSharp/releases) section and unzip it into a location of your choice. You will need to edit the included appsettings.json file with your own Loopring details; ie api key, private key,address(not your ENS) and account id. You can export these out from your account via https://loopring.io . Remember to keep these values private and do not share with anyone!
 
