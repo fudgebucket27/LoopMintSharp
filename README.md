@@ -17,6 +17,8 @@ chmod +x LoopMintSharp
 ```
 If compiling yourself please read the section about it below.
 
+The following instructions in this README are for version 3 and above. For version 2 and below see: https://github.com/fudgebucket27/LoopMintSharp#video-tutorial-for-version-2-and-below
+
 ## 1. Creating a collection
 **All commands must be done in a command line window opened in the same folder as the unzipped LoopMintSharp**
 
