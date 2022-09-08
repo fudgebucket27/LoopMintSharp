@@ -170,14 +170,14 @@ else if (args[0].Trim() == "-mintcollection")
     if(args.Length != 2)
     {
         Console.WriteLine("This argument -mintcollection needs a collection contract address!");
-        Console.WriteLine("eg: LoopMintSharp --mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd");
+        Console.WriteLine("eg: LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd");
         System.Environment.Exit(0);
     }
 
     if(!args[1].Trim().StartsWith("0x"))
     {
         Console.WriteLine("This argument -mintcollection needs a VALID collection contract address!");
-        Console.WriteLine("eg: LoopMintSharp --mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd");
+        Console.WriteLine("eg: LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd");
         System.Environment.Exit(0);
     }
 
