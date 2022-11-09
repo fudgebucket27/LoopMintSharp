@@ -53,6 +53,17 @@ macOS users:
 ./LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd
 ```
 
+You can also specify a royalty address with v3.0.3 and above:
+
+```batch
+LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd -royaltyAddress 0x36Cd6b3b9329c04df55d55D41C257a5fdD387ACd
+```
+
+macOS users: 
+```batch
+./LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd -royaltyAddress 0x36Cd6b3b9329c04df55d55D41C257a5fdD387ACd
+```
+
 ## 3. Minting to the legacy contract
 **All commands must be done in a command line window opened in the same folder as the unzipped LoopMintSharp**
 
@@ -65,6 +76,17 @@ LoopMintSharp -legacymintcollection
 macOS users: 
 ```batch
 ./LoopMintSharp -legacymintcollection
+```
+
+You can also specify a royalty address with v3.0.3 and above:
+
+```batch
+LoopMintSharp -legacymintcollection -royaltyAddress 0x36Cd6b3b9329c04df55d55D41C257a5fdD387ACd
+```
+
+macOS users: 
+```batch
+./LoopMintSharp -legacymintcollection -royaltyAddress 0x36Cd6b3b9329c04df55d55D41C257a5fdD387ACd
 ```
 
 # Compiling yourself
