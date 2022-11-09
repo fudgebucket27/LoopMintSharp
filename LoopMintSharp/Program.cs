@@ -175,7 +175,7 @@ else if (args[0].Trim() == "-legacymintcollection" )
         }
     }
 
-    string csvName = $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}.csv";
+    string csvName = $"{DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.csv";
     using (var writer = new StreamWriter(csvName))
     using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
     {
@@ -294,7 +294,7 @@ else if (args[0].Trim() == "-mintcollection")
         }
     }
 
-    string csvName = $"{DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}.csv";
+    string csvName = $"{DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.csv";
     using (var writer = new StreamWriter(csvName))
     using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
     {
