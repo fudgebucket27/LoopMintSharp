@@ -94,6 +94,25 @@ else if (args[0].Trim() == "-legacymintcollection" )
     var lineCount = File.ReadLines("cids.txt").Count();
     var count = 0;
 
+    var royaltyAddress = "";
+
+    if (args.Length == 3 && !args[2].Trim().StartsWith("0x"))
+    {
+        Console.WriteLine("This argument -royaltyAddress needs a VALID royaltyAddress!");
+        Console.WriteLine("eg: LoopMintSharp -legacymintcollection -royaltyAddress 0x36Cd6b3b9329c04df55d55D41C257a5fdD387ACd");
+        System.Environment.Exit(0);
+    }
+
+    if (args.Length == 3 && args[2].Trim().StartsWith("0x"))
+    {
+        royaltyAddress = args[2].Trim();
+    }
+
+    if (string.IsNullOrEmpty(royaltyAddress))
+    {
+        royaltyAddress = minterAddress;
+    }
+
     if (skipMintFeePrompt == false)
     {
         var offChainFee = await minter.GetMintFee(loopringApiKey, accountId, minterAddress, nftFactory, verboseLogging, "");
@@ -142,7 +161,7 @@ else if (args[0].Trim() == "-legacymintcollection" )
             currentCid = currentCid.Trim();
             count++;
             Console.WriteLine($"Attempting mint {count} out of {lineCount} NFTs");
-            var mintResponse = await minter.MintLegacyCollection(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactory, exchange, currentCid, verboseLogging);
+            var mintResponse = await minter.MintLegacyCollection(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactory, exchange, currentCid, verboseLogging, royaltyAddress);
             mintResponses.Add(mintResponse);
             Console.SetCursorPosition(0, Console.CursorTop - 1);
             if (!string.IsNullOrEmpty(mintResponse.errorMessage))
@@ -167,10 +186,14 @@ else if (args[0].Trim() == "-legacymintcollection" )
 }
 else if (args[0].Trim() == "-mintcollection")
 {
-    if(args.Length != 2)
+    var royaltyAddress = "";
+
+    if(args.Length != 2 && args.Length !=4)
     {
         Console.WriteLine("This argument -mintcollection needs a collection contract address!");
         Console.WriteLine("eg: LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd");
+        Console.WriteLine("You can also specify a royalty address!");
+        Console.WriteLine("eg: LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd -royaltyAddress 0x36Cd6b3b9329c04df55d55D41C257a5fdD387ACd");
         System.Environment.Exit(0);
     }
 
@@ -179,6 +202,23 @@ else if (args[0].Trim() == "-mintcollection")
         Console.WriteLine("This argument -mintcollection needs a VALID collection contract address!");
         Console.WriteLine("eg: LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd");
         System.Environment.Exit(0);
+    }
+
+    if(args.Length == 4 && !args[3].Trim().StartsWith("0x"))
+    {
+        Console.WriteLine("This argument -royaltyAddress needs a VALID royaltyAddress!");
+        Console.WriteLine("eg: LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd -royaltyAddress 0x36Cd6b3b9329c04df55d55D41C257a5fdD387ACd");
+        System.Environment.Exit(0);
+    }
+
+    if(args.Length == 4 && args[3].Trim().StartsWith("0x"))
+    {
+        royaltyAddress = args[3].Trim();
+    }
+
+    if(string.IsNullOrEmpty(royaltyAddress))
+    {
+        royaltyAddress = minterAddress;
     }
 
     var collectionContractAddress = args[1].Trim();
@@ -240,7 +280,7 @@ else if (args[0].Trim() == "-mintcollection")
             currentCid = currentCid.Trim();
             count++;
             Console.WriteLine($"Attempting mint {count} out of {lineCount} NFTs");
-            var mintResponse = await minter.MintCollection(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactoryCollection, exchange, currentCid, verboseLogging, collectionResult.collections[0].collection.baseUri, collectionContractAddress);
+            var mintResponse = await minter.MintCollection(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactoryCollection, exchange, currentCid, verboseLogging, collectionResult.collections[0].collection.baseUri, collectionContractAddress, royaltyAddress);
             mintResponses.Add(mintResponse);
             Console.SetCursorPosition(0, Console.CursorTop - 1);
             if (!string.IsNullOrEmpty(mintResponse.errorMessage))

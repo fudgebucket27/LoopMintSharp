@@ -105,7 +105,8 @@ namespace LoopMintSharp
             bool forceToMint, 
             CounterFactualNftInfo counterFactualNftInfo,
             string eddsaSignature, 
-            bool verboseLogging)
+            bool verboseLogging,
+            string royaltyAddress)
         {
             var request = new RestRequest("api/v3/nft/mint");
             request.AddHeader("x-api-key", apiKey);
@@ -125,6 +126,7 @@ namespace LoopMintSharp
             request.AddParameter("maxFee.tokenId", maxFeeTokenId);
             request.AddParameter("maxFee.amount", maxFeeAmount);
             request.AddParameter("forceToMint", "false");
+            request.AddParameter("royaltyAddress", royaltyAddress);
             request.AddParameter("counterFactualNftInfo.nftFactory", counterFactualNftInfo.nftFactory);
             request.AddParameter("counterFactualNftInfo.nftOwner", counterFactualNftInfo.nftOwner);
             request.AddParameter("counterFactualNftInfo.nftBaseUri", counterFactualNftInfo.nftBaseUri);

@@ -100,7 +100,8 @@ namespace LoopMintSharp
                  string? nftFactory,
                  string? exchange,
                  string currentCid,
-                 bool verboseLogging)
+                 bool verboseLogging,
+                 string royaltyAddress)
         {
             #region Get storage id, token address and offchain fee
             //Getting the storage id
@@ -199,7 +200,8 @@ namespace LoopMintSharp
                 forceToMint: false,
                 counterFactualNftInfo: counterFactualNftInfo,
                 eddsaSignature: eddsaSignature,
-                verboseLogging: verboseLogging
+                verboseLogging: verboseLogging,
+                royaltyAddress: royaltyAddress
                 );
             nftMintResponse.metadataCid = currentCid;
             nftMintResponse.nftId = nftId;
@@ -233,7 +235,8 @@ namespace LoopMintSharp
                        string currentCid,
                        bool verboseLogging,
                        string baseUri,
-                       string tokenAddress)
+                       string tokenAddress,
+                       string royaltyAddress)
         {
             #region Get storage id, token address and offchain fee
             //Getting the storage id
@@ -326,7 +329,8 @@ namespace LoopMintSharp
                 forceToMint: false,
                 counterFactualNftInfo: counterFactualNftInfo,
                 eddsaSignature: eddsaSignature,
-                verboseLogging: verboseLogging
+                verboseLogging: verboseLogging,
+                royaltyAddress: royaltyAddress
                 );
             nftMintResponse.metadataCid = currentCid;
             nftMintResponse.nftId = nftId;

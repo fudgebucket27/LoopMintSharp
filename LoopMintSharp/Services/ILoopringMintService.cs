@@ -30,7 +30,8 @@ namespace LoopMintSharp
             bool forceToMint,
             CounterFactualNftInfo counterFactualNftInfo,
             string eddsaSignature,
-            bool verboseLogging);
+            bool verboseLogging,
+            string royaltyAddress);
 
         Task<CreateCollectionResult> CreateNftCollection(
             string apiKey,
