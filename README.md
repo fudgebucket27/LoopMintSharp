@@ -42,7 +42,7 @@ Be sure to save the contract address that is generated for you. You will need th
 ## 2. Minting to a collection
 **All commands must be done in a command line window opened in the same folder as the unzipped LoopMintSharp**
 
-Once you have created a collection and have the contract address. Modify the included "cids.txt" file with the metadata json ipfs cids for the NFTs you intend to mint in the collection. Once you have done that you can mint to that collection with the following command, replacing *0x1ad897a7957561dc502a19b38e7e5a3b045375bd* with the contract address that was generated for you in the previous step.
+Once you have created a collection and have the contract address. Modify the included "cids.txt" file with the metadata json ipfs cids for the NFTs you intend to mint in the collection. The ipfs json cids need to be cid v0 which start with Qm. Once you have done that you can mint to that collection with the following command, replacing *0x1ad897a7957561dc502a19b38e7e5a3b045375bd* with the contract address that was generated for you in the previous step.
 
 ```batch
 LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd
@@ -67,7 +67,7 @@ macOS users:
 ## 3. Minting to the legacy contract
 **All commands must be done in a command line window opened in the same folder as the unzipped LoopMintSharp**
 
-Before the introduction of collections, all NFTs on Loopring fell under one contract. This is now considered legacy. If need be you can also mint to this legacy contract. Modify the included "cids.txt" file with the metadata json ipfs cids for the NFTs you intend to mint in the legacy contract. Once you have done that you can mint to the legacy contract with the following command.
+Before the introduction of collections, all NFTs on Loopring fell under one contract. This is now considered legacy. If need be you can also mint to this legacy contract. Modify the included "cids.txt" file with the metadata json ipfs cids for the NFTs you intend to mint in the legacy contract. The ipfs json cids need to be cid v0 which start with Qm. Once you have done that you can mint to the legacy contract with the following command.
 
 ```batch
 LoopMintSharp -legacymintcollection
@@ -99,7 +99,7 @@ If compiling yourself. You need to generate an appsettings.json file in the proj
     "LoopringPrivateKey": "0x", //Your loopring private key
     "LoopringAddress": "0x", //Your loopring address
     "LoopringAccountId": 40940, //Your loopring account id 
-    "NftAmount": 1, //Amount of NFTs to mint, number between 1 - 10 000
+    "NftAmount": 1, //Amount of NFT Editions per mint, number between 1 - 10 000, For 1 to 1 NFTs leave it as 1
     "NftRoyaltyPercentage": 6, //Nft royalty percentage can be between 0% - 50%
     "NftType": 0, //Nft type. 0 = ERC1155, 1 = ERC721
     "ValidUntil": 1700000000, //How long this mint should be valid for. Shouldn't have to change this value
