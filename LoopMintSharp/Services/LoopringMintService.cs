@@ -1,4 +1,5 @@
 ﻿using JsonFlatten;
+using LoopMintSharp.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -225,6 +226,45 @@ namespace LoopMintSharp
                 if (verboseLogging)
                 {
                     Console.WriteLine($"Error finding collection: {httpException.Message}");
+                }
+                return null;
+            }
+        }
+
+        public async Task<string> MintRedPacketNft(string apiKey, string apiSig, RedPacketNft redPacketNft, bool verboseLogging)
+        {
+            var request = new RestRequest("/api/v3/luckyToken/sendLuckyToken", Method.Post);
+            request.AddHeader("x-api-key", apiKey);
+            request.AddHeader("x-api-sig", apiSig);
+            request.AddHeader("Accept", "application/json");
+            var jObject = JObject.Parse(JsonConvert.SerializeObject(redPacketNft));
+            var jObjectFlattened = jObject.Flatten();
+            var jObjectFlattenedString = JsonConvert.SerializeObject(jObjectFlattened);
+            request.AddParameter("application/json", jObjectFlattenedString, ParameterType.RequestBody);
+            try
+            {
+                var response = await _client.ExecuteAsync(request);
+                var data = response.Content!;
+                if (response.IsSuccessful)
+                {
+                    Console.WriteLine($"Red packet nft mint response: {data}");
+                }
+                else if (!response.IsSuccessful && verboseLogging)
+                {
+                    Console.WriteLine($"Error creating minting red packet nft: {response.Content}");
+                }
+                else if (!response.IsSuccessful)
+                {
+                    Console.WriteLine($"Error creating minting red packet nft: {response.Content}");
+                }
+                return data;
+            }
+            catch (HttpRequestException httpException)
+            {
+                var data = "";
+                if (verboseLogging)
+                {
+                    Console.WriteLine($"Error creating minting red packet nft!: {httpException.Message}");
                 }
                 return null;
             }

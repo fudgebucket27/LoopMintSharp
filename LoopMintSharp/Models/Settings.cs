@@ -11,6 +11,8 @@ namespace LoopMintSharp
         public string LoopringApiKey { get; set; }
         public string LoopringPrivateKey { get; set; }
         public string LoopringAddress { get; set; }
+
+        public string Layer1PrivateKey { get; set; }
         public int LoopringAccountId { get; set; }
         public int NftAmount { get; set; }
         public int NftRoyaltyPercentage { get; set; }

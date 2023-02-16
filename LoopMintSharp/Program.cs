@@ -303,8 +303,12 @@ else if (args[0].Trim() == "-mintcollection")
         Console.WriteLine($"CSV can be found in the following location: {AppDomain.CurrentDomain.BaseDirectory + csvName}");
     }
 }
-else
+else if (args[0].Trim() == "-mintredpacketnft")
 {
+
+}
+else
+        {
     Console.WriteLine("Invalid arguments. You can use -createcollection to create a collection, -legacymintcollection to mint on the legacy contract,or -mintcollection to mint to a collection to the latest contract");
     Console.WriteLine("eg: LoopMintSharp -createcollection");
     Console.WriteLine("eg: LoopMintSharp -legacymintcollection");

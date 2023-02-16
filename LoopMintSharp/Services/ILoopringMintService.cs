@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LoopMintSharp.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,6 +33,14 @@ namespace LoopMintSharp
             string eddsaSignature,
             bool verboseLogging,
             string royaltyAddress);
+
+        Task<string> MintRedPacketNft
+        (
+            string apiKey,
+            string apiSig,
+            RedPacketNft redPacketNft,
+            bool verboseLogging
+        );
 
         Task<CreateCollectionResult> CreateNftCollection(
             string apiKey,
