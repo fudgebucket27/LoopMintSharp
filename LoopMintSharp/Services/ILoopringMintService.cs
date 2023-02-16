@@ -42,6 +42,8 @@ namespace LoopMintSharp
             bool verboseLogging
         );
 
+        Task<NftBalance> GetTokenIdWithCheck(string apiKey, int accountId, string nftData);
+
         Task<CreateCollectionResult> CreateNftCollection(
             string apiKey,
             CreateCollectionRequest createCollectionRequest,

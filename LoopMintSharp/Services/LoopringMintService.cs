@@ -269,5 +269,25 @@ namespace LoopMintSharp
                 return null;
             }
         }
+
+        public async Task<NftBalance> GetTokenIdWithCheck(string apiKey, int accountId, string nftData)
+        {
+            var data = new NftBalance();
+            var request = new RestRequest("/api/v3/user/nft/balances");
+            request.AddHeader("x-api-key", apiKey);
+            request.AddParameter("accountId", accountId);
+            request.AddParameter("nftDatas", nftData);
+            try
+            {
+                var response = await _client.GetAsync(request);
+                data = JsonConvert.DeserializeObject<NftBalance>(response.Content!);
+                return data;
+            }
+            catch (HttpRequestException httpException)
+            {
+                Console.WriteLine($"Error getting TokenId: {httpException.Message}");
+                return null;
+            }
+        }
     }
 }
