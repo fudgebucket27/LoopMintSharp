@@ -22,6 +22,7 @@ Settings settings = config.GetRequiredSection("Settings").Get<Settings>();
 Minter minter = new Minter();
 string loopringApiKey = settings.LoopringApiKey;//you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 string loopringPrivateKey = settings.LoopringPrivateKey; //you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
+var layer1PrivateKey = settings.Layer1PrivateKey;
 var minterAddress = settings.LoopringAddress; //your loopring address
 var accountId = settings.LoopringAccountId; //your loopring account id
 var nftType = settings.NftType; //nfttype 0 = ERC1155, shouldn't need to change this unless you want ERC721 which is 1
@@ -305,7 +306,9 @@ else if (args[0].Trim() == "-mintcollection")
 }
 else if (args[0].Trim() == "-mintredpacketnft")
 {
-
+    string nftData = "0x29e760a7c9933fc6fcd374c27f3762bc3a1e714bb176b1542b9c5f81ef1b1532";
+    var nftBalance = await minter.GetTokenIdWithCheck(loopringApiKey, settings.LoopringAccountId, nftData, verboseLogging);
+    var offchainFee = await minter.GetMintFeeWithAmount(loopringApiKey, accountId, nftBalance.data[0].tokenAddress, verboseLogging);
 }
 else
         {

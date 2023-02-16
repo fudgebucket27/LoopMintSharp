@@ -36,6 +36,18 @@ namespace LoopMintSharp
             return mintFee;
         }
 
+        public async Task<OffchainFee> GetMintFeeWithAmount(
+            string loopringApiKey,
+            int accountId,
+            string tokenAddress,
+            bool verboseLogging
+            )
+        {
+            //Getting the token address
+            var mintFee = await loopringMintService.GetOffChainFeeWithAmount(loopringApiKey, accountId, 0, 3, tokenAddress, verboseLogging);
+            return mintFee;
+        }
+
         public async Task<CreateCollectionResult> CreateNftCollection(
             string apiKey,
             string avatar,
@@ -348,6 +360,28 @@ namespace LoopMintSharp
             }
             return nftMintResponse;
             #endregion
+        }
+
+        public async Task<NftBalance> GetTokenIdWithCheck(string loopringApiKey, int loopringAccountId, string nftData, bool verboseLogging)
+        {
+            return await loopringMintService.GetTokenIdWithCheck(loopringApiKey, loopringAccountId, nftData, verboseLogging);
+        }
+
+        public async Task<string> MintRedPacketNft(
+                    string loopringApiKey,
+                 string loopringPrivateKey,
+                 string layer1PrivateKey,
+                 string? minterAddress,
+                 int accountId,
+                 NftBalance nftBalance,
+                 OffchainFee offchainFee,
+                 long validUntil,
+                 int maxFeeTokenId,
+                 string? exchange,
+                 bool verboseLogging)
+        {
+
+            return "";
         }
     }
 }

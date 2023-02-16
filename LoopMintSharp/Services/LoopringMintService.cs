@@ -87,6 +87,27 @@ namespace LoopMintSharp
             }
         }
 
+        public async Task<OffchainFee> GetOffChainFeeWithAmount(string apiKey, int accountId, int amount, int requestType, string tokenAddress, bool verboseLogging)
+        {
+            var request = new RestRequest("api/v3/user/nft/offchainFee");
+            request.AddHeader("x-api-key", apiKey);
+            request.AddParameter("accountId", accountId);
+            request.AddParameter("amount", amount);
+            request.AddParameter("requestType", requestType);
+            request.AddParameter("tokenAddress", tokenAddress);
+            try
+            {
+                var response = await _client.GetAsync(request);
+                var data = JsonConvert.DeserializeObject<OffchainFee>(response.Content!);
+                return data;
+            }
+            catch (HttpRequestException httpException)
+            {
+                Console.WriteLine($"Error getting off chain fee: {httpException.Message}");
+                return null;
+            }
+        }
+
         public async Task<MintResponseData> MintNft(
             string apiKey, 
             string exchange, 
@@ -270,7 +291,7 @@ namespace LoopMintSharp
             }
         }
 
-        public async Task<NftBalance> GetTokenIdWithCheck(string apiKey, int accountId, string nftData)
+        public async Task<NftBalance> GetTokenIdWithCheck(string apiKey, int accountId, string nftData, bool verboseLogging)
         {
             var data = new NftBalance();
             var request = new RestRequest("/api/v3/user/nft/balances");
@@ -285,7 +306,10 @@ namespace LoopMintSharp
             }
             catch (HttpRequestException httpException)
             {
-                Console.WriteLine($"Error getting TokenId: {httpException.Message}");
+                if (verboseLogging)
+                {
+                    Console.WriteLine($"Error getting Token Id: {httpException.Message}");
+                }
                 return null;
             }
         }
