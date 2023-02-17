@@ -45,7 +45,11 @@ namespace LoopMintSharp
             )
         {
             //Getting the token address
-            var mintFee = await loopringMintService.GetOffChainFeeWithAmount(loopringApiKey, accountId, 0, 3, tokenAddress, verboseLogging);
+            var mintFee = await loopringMintService.GetOffChainFeeWithAmount(loopringApiKey, accountId,0, 3, tokenAddress, verboseLogging);
+            if (verboseLogging)
+            {
+                Console.WriteLine($"Offchain fee: {JsonConvert.SerializeObject(mintFee, Formatting.Indented)}");
+            }
             return mintFee;
         }
 

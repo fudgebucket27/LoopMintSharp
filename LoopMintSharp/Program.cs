@@ -307,12 +307,12 @@ else if (args[0].Trim() == "-mintcollection")
 else if (args[0].Trim() == "-mintredpacketnft")
 {
     string nftData = "0x2afcb3a9ab52c109ca6ad8ef6315dc747867589bafcabf2e7e8b7f1983e3c2d9";
-    var nftBalance = await minter.GetTokenIdWithCheck(loopringApiKey, accountId, nftData, verboseLogging);
+    //var nftBalance = await minter.GetTokenIdWithCheck(loopringApiKey, accountId, nftData, verboseLogging);
     var amountOfNftsPerPacket = "1";
     var amountOfPackets = "1";
-    Console.WriteLine(nftBalance.data[0].tokenAddress);
+    //Console.WriteLine($"{nftBalance.data[0].tokenAddress}, {nftBalance.totalNum}");
     var offchainFee = await minter.GetMintFeeWithAmount(loopringApiKey, accountId, "0xbeb2f2367c1e79003dffa34f16a2b933624a6e05", verboseLogging);
-    var mintRedPacketNft = await minter.MintRedPacketNft(loopringApiKey, loopringPrivateKey, layer1PrivateKey, minterAddress, accountId, nftBalance, validUntil, maxFeeTokenId, exchange, amountOfNftsPerPacket, amountOfPackets, verboseLogging);
+    //var mintRedPacketNft = await minter.MintRedPacketNft(loopringApiKey, loopringPrivateKey, layer1PrivateKey, minterAddress, accountId, nftBalance, validUntil, maxFeeTokenId, exchange, amountOfNftsPerPacket, amountOfPackets, verboseLogging);
 }
 else
         {
