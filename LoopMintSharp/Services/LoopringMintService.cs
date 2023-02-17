@@ -92,8 +92,9 @@ namespace LoopMintSharp
             var request = new RestRequest("api/v3/user/nft/offchainFee");
             request.AddHeader("x-api-key", apiKey);
             request.AddParameter("accountId", accountId);
+            request.AddParameter("amount", amount); 
             request.AddParameter("requestType", requestType);
-            request.AddParameter("tokenAddress", tokenAddress);
+            request.AddParameter("tokenAddress", "0xbeb2f2367c1e79003dffa34f16a2b933624a6e05");
             try
             {
                 var response = await _client.GetAsync(request);

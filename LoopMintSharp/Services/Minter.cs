@@ -45,7 +45,7 @@ namespace LoopMintSharp
             )
         {
             //Getting the token address
-            var mintFee = await loopringMintService.GetOffChainFeeWithAmount(loopringApiKey, accountId,0, 3, tokenAddress, verboseLogging);
+            var mintFee = await loopringMintService.GetOffChainFeeWithAmount(loopringApiKey, accountId,0, 11, tokenAddress, verboseLogging);
             if (verboseLogging)
             {
                 Console.WriteLine($"Offchain fee: {JsonConvert.SerializeObject(mintFee, Formatting.Indented)}");
@@ -117,7 +117,7 @@ namespace LoopMintSharp
                  string? nftFactory,
                  string? exchange,
                  string currentCid,
-                 bool verboseLogging,
+                 bool verboseLogging, 
                  string royaltyAddress)
         {
             #region Get storage id, token address and offchain fee
@@ -379,14 +379,16 @@ namespace LoopMintSharp
                  string? minterAddress,
                  int accountId,
                  NftBalance nftBalance,
-                 long validUntil,
+                 double validUntilDays,
                  int maxFeeTokenId,
                  string? exchange,
                  string amountOfNftsPerPacket,
                  string amountOfPackets,
                  bool verboseLogging)
         {
-            var offchainFee = await loopringMintService.GetOffChainFeeWithAmount(loopringApiKey, accountId, 0, 3, nftBalance.data[0].tokenAddress, verboseLogging);
+            long validSince = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            var validUntil = DateTimeOffset.UtcNow.AddDays(validUntilDays).ToUnixTimeSeconds(); ;
+            var offchainFee = await loopringMintService.GetOffChainFeeWithAmount(loopringApiKey, accountId, 0, 11, nftBalance.data[0].tokenAddress, verboseLogging);
             var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, nftBalance.data[0].tokenId, verboseLogging);
 
             //Calculate eddsa signautre
@@ -534,7 +536,7 @@ namespace LoopMintSharp
                 mode = 1,
                 scope = 1
             };
-            redPacketNft.validSince = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            redPacketNft.validSince = validSince;
             redPacketNft.validUntil = validUntil;
             var mintResponse = await loopringMintService.MintRedPacketNft(loopringApiKey, ecdsaSignature, redPacketNft, verboseLogging);
             return "";
