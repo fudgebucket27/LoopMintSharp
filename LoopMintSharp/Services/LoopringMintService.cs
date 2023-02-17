@@ -252,7 +252,7 @@ namespace LoopMintSharp
             }
         }
 
-        public async Task<string> MintRedPacketNft(string apiKey, string apiSig, RedPacketNft redPacketNft, bool verboseLogging)
+        public async Task<RedPacketNftMintResponse> MintRedPacketNft(string apiKey, string apiSig, RedPacketNft redPacketNft, bool verboseLogging)
         {
             var request = new RestRequest("/api/v3/luckyToken/sendLuckyToken", Method.Post);
             request.AddHeader("x-api-key", apiKey);
@@ -265,7 +265,7 @@ namespace LoopMintSharp
             try
             {
                 var response = await _client.ExecuteAsync(request);
-                var data = response.Content!;
+                var data = JsonConvert.DeserializeObject<RedPacketNftMintResponse>(response.Content!);
                 if (response.IsSuccessful)
                 {
                     Console.WriteLine($"Red packet nft mint response: {data}");
@@ -282,11 +282,12 @@ namespace LoopMintSharp
             }
             catch (HttpRequestException httpException)
             {
-                var data = "";
+                var data = new RedPacketNftMintResponse();
                 if (verboseLogging)
                 {
                     Console.WriteLine($"Error creating minting red packet nft!: {httpException.Message}");
                 }
+                data.errorMessage = httpException.Message;
                 return null;
             }
         }

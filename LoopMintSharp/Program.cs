@@ -2,8 +2,12 @@
 using Microsoft.Extensions.Configuration;
 using CsvHelper;
 using System.Globalization;
+using static System.Net.Mime.MediaTypeNames;
+using System.Drawing;
+using SkiaSharp.QrCode;
+using SkiaSharp;
 
-if(args.Length == 0)
+if (args.Length == 0)
 {
     Console.WriteLine("LoopMintSharp needs arguments passed from command line. You can use -createcollection to create a collection, -legacymintcollection to mint on the legacy contract,or -mintcollection to mint to a collection to the latest contract");
     Console.WriteLine("eg: LoopMintSharp -createcollection");
@@ -306,15 +310,41 @@ else if (args[0].Trim() == "-mintcollection")
 }
 else if (args[0].Trim() == "-mintredpacketnft")
 {
-    string nftData = "0x06ee103adb0da61254bc909fc26c9a9ea8f2319ab44b0d305bf0698300784921";
+    string nftData = "0x2bddc27d4bf93725a20dc6588710f7977527c260bb5e165426b692b99eaf5f25";
     var nftBalance = await minter.GetTokenIdWithCheck(loopringApiKey, accountId, nftData, verboseLogging);
     var amountOfNftsPerPacket = "1";
     var amountOfPackets = "1";
     var validUntilDays = 30;
     var isRandomSplit = false;
-    //Console.WriteLine($"{nftBalance.data[0].tokenAddress}, {nftBalance.totalNum}");
     var offchainFee = await minter.GetMintFeeWithAmount(loopringApiKey, accountId, "0xbeb2f2367c1e79003dffa34f16a2b933624a6e05", verboseLogging);
-    var mintRedPacketNft = await minter.MintRedPacketNft(loopringApiKey, loopringPrivateKey, layer1PrivateKey, minterAddress, accountId, nftBalance, validUntilDays, maxFeeTokenId, exchange, amountOfNftsPerPacket, amountOfPackets, isRandomSplit, verboseLogging);
+    var mintRedPacketNftResponse = await minter.MintRedPacketNft(loopringApiKey, loopringPrivateKey, layer1PrivateKey, minterAddress, accountId, nftBalance, validUntilDays, maxFeeTokenId, exchange, amountOfNftsPerPacket, amountOfPackets, isRandomSplit, verboseLogging);
+    Console.WriteLine($"Attempting mint 1 out of 1 NFTs");
+    Console.SetCursorPosition(0, Console.CursorTop - 1);
+    if (!string.IsNullOrEmpty(mintRedPacketNftResponse.errorMessage))
+    {
+        Console.WriteLine($"Mint 1 out of 1 NFTs was UNSUCCESSFUL. ERROR MESSAGE: {mintRedPacketNftResponse.errorMessage}");
+    }
+    else
+    {
+        Console.WriteLine($"Mint 1 out of 1 NFTs was SUCCESSFUL");
+        var content = $"https://loopring.io/#/wallet?redpacket&id={mintRedPacketNftResponse.hash}&referrer={minterAddress}";
+        using var generator = new QRCodeGenerator();
+
+        // Generate QrCode
+        var qr = generator.CreateQrCode(content, ECCLevel.L);
+
+        // Render to canvas
+        var info = new SKImageInfo(512, 512);
+        using var surface = SKSurface.Create(info);
+        var canvas = surface.Canvas;
+        canvas.Render(qr, info.Width, info.Height);
+
+        // Output to Stream -> File
+        using var image = surface.Snapshot();
+        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+        using var stream = File.OpenWrite($"{mintRedPacketNftResponse.hash}.png");
+        data.SaveTo(stream);
+    }
 }
 else
         {

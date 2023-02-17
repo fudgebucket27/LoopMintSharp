@@ -35,7 +35,7 @@ namespace LoopMintSharp
             bool verboseLogging,
             string royaltyAddress);
 
-        Task<string> MintRedPacketNft
+        Task<RedPacketNftMintResponse> MintRedPacketNft
         (
             string apiKey,
             string apiSig,

@@ -372,7 +372,7 @@ namespace LoopMintSharp
             return await loopringMintService.GetTokenIdWithCheck(loopringApiKey, loopringAccountId, nftData, verboseLogging);
         }
 
-        public async Task<string> MintRedPacketNft(
+        public async Task<RedPacketNftMintResponse> MintRedPacketNft(
                     string loopringApiKey,
                  string loopringPrivateKey,
                  string layer1PrivateKey,
@@ -540,7 +540,19 @@ namespace LoopMintSharp
             redPacketNft.validSince = validSince;
             redPacketNft.validUntil = validUntil;
             var mintResponse = await loopringMintService.MintRedPacketNft(loopringApiKey, ecdsaSignature, redPacketNft, verboseLogging);
-            return "";
+            if (mintResponse.hash != null)
+            {
+                if (verboseLogging)
+                {
+                    Console.WriteLine($"Nft Mint response: {JsonConvert.SerializeObject(mintResponse, Formatting.Indented)}");
+                }
+                mintResponse.status = "Minted successfully";
+            }
+            else
+            {
+                mintResponse.status = "Mint failed";
+            }
+            return mintResponse;
         }
     }
 }
