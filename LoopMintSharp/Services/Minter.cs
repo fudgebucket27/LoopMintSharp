@@ -12,6 +12,8 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using LoopDropSharp;
+using Type = LoopDropSharp.Type;
 
 namespace LoopMintSharp
 {

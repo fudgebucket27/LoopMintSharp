@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoopMintSharp
+namespace LoopDropSharp
 {
     public class TransferTypedData
     {
