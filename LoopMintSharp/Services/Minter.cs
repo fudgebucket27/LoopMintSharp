@@ -384,6 +384,7 @@ namespace LoopMintSharp
                  string? exchange,
                  string amountOfNftsPerPacket,
                  string amountOfPackets,
+                 bool isRandomSplit,
                  bool verboseLogging)
         {
             long validSince = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
@@ -532,7 +533,7 @@ namespace LoopMintSharp
             redPacketNft.templateId = 0;
             redPacketNft.type = new Models.Type()
             {
-                partition = 1,
+                partition = isRandomSplit == true ? 0 : 1,
                 mode = 1,
                 scope = 1
             };
