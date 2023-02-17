@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LoopDropSharp;
 using Type = LoopDropSharp.Type;
+using LoopMintSharp.Models;
 
 namespace LoopMintSharp
 {
@@ -382,7 +383,8 @@ namespace LoopMintSharp
                  long validUntil,
                  int maxFeeTokenId,
                  string? exchange,
-                 string amount,
+                 string amountOfNftsPerPacket,
+                 string amountOfPackets,
                  bool verboseLogging)
         {
             var offchainFee = await loopringMintService.GetOffChainFeeWithAmount(loopringApiKey, accountId, 3, 0, nftBalance.data[0].tokenAddress, verboseLogging);
@@ -395,7 +397,7 @@ namespace LoopMintSharp
                                     (BigInteger) accountId,
                                     (BigInteger) 0,
                                     (BigInteger) nftBalance.data[0].tokenId,
-                                    BigInteger.Parse(amount),
+                                    BigInteger.Parse(amountOfNftsPerPacket),
                                     (BigInteger) maxFeeTokenId,
                                     BigInteger.Parse(offchainFee.fees[maxFeeTokenId].fee),
                                     Utils.ParseHexUnsigned("0x9cde4366824d9410fb2e2f885601933a926f40d7"),
@@ -448,7 +450,7 @@ namespace LoopMintSharp
                                     new MemberValue {TypeName = "address", Value = minterAddress},
                                     new MemberValue {TypeName = "address", Value = "0x9cde4366824d9410fb2e2f885601933a926f40d7"},
                                     new MemberValue {TypeName = "uint16", Value = nftBalance.data[0].tokenId},
-                                    new MemberValue {TypeName = "uint96", Value = BigInteger.Parse(amount)},
+                                    new MemberValue {TypeName = "uint96", Value = BigInteger.Parse(amountOfNftsPerPacket)},
                                     new MemberValue {TypeName = "uint16", Value = maxFeeTokenId},
                                     new MemberValue {TypeName = "uint96", Value = BigInteger.Parse(offchainFee.fees[maxFeeTokenId].fee)},
                                     new MemberValue {TypeName = "uint32", Value = validUntil},
@@ -469,7 +471,7 @@ namespace LoopMintSharp
                     from = minterAddress,
                     to = "0x9cde4366824d9410fb2e2f885601933a926f40d7",
                     tokenID = nftBalance.data[0].tokenId,
-                    amount =  amount,
+                    amount =  amountOfNftsPerPacket,
                     feeTokenID = maxFeeTokenId,
                     maxFee = offchainFee.fees[maxFeeTokenId].fee,
                     validUntil = (int)validUntil,
@@ -505,8 +507,37 @@ namespace LoopMintSharp
             var ECDRSASignature = ethECKey.SignAndCalculateV(Sha3Keccack.Current.CalculateHash(encodedTypedData));
             var serializedECDRSASignature = EthECDSASignature.CreateStringSignature(ECDRSASignature);
             var ecdsaSignature = serializedECDRSASignature + "0" + (int)2;
-
-
+            RedPacketNft redPacketNft = new RedPacketNft();
+            redPacketNft.ecdsaSignature = ecdsaSignature;
+            LuckyToken luckyToken= new LuckyToken();
+            luckyToken.exchange = exchange;
+            luckyToken.payerAddr = minterAddress;
+            luckyToken.payerId = accountId;
+            luckyToken.payeeAddr = "0x9cde4366824d9410fb2e2f885601933a926f40d7";
+            luckyToken.storageId = storageId.offchainId;
+            luckyToken.token = nftBalance.data[0].tokenId;
+            luckyToken.amount = amountOfNftsPerPacket;
+            luckyToken.feeToken = maxFeeTokenId;
+            luckyToken.maxFeeAmount = offchainFee.fees[maxFeeTokenId].fee;
+            luckyToken.validUntil = validUntil;
+            luckyToken.payeeId = 0;
+            luckyToken.memo = $"LuckTokenSendBy{accountId}";
+            luckyToken.eddsaSig = eddsaSignature;
+            redPacketNft.luckyToken = luckyToken;
+            redPacketNft.memo = "minted with loopmintsharp";
+            redPacketNft.nftData = nftBalance.data[0].nftData;
+            redPacketNft.numbers = amountOfPackets;
+            redPacketNft.signerFlag = false;
+            redPacketNft.templateId = 0;
+            redPacketNft.type = new RedPacketNftType()
+            {
+                partition = 1,
+                mode = 1,
+                scope = 1
+            };
+            redPacketNft.validSince = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            redPacketNft.validUntil = validUntil;
+            var mintResponse = await loopringMintService.MintRedPacketNft(loopringApiKey, ecdsaSignature, redPacketNft, verboseLogging);
             return "";
         }
     }
