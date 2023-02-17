@@ -382,7 +382,7 @@ namespace LoopMintSharp
                  string amountOfPackets,
                  bool verboseLogging)
         {
-            var offchainFee = await loopringMintService.GetOffChainFeeWithAmount(loopringApiKey, accountId, 3, 0, nftBalance.data[0].tokenAddress, verboseLogging);
+            var offchainFee = await loopringMintService.GetOffChainFeeWithAmount(loopringApiKey, accountId, 0, 3, nftBalance.data[0].tokenAddress, verboseLogging);
             var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, nftBalance.data[0].tokenId, verboseLogging);
 
             //Calculate eddsa signautre
