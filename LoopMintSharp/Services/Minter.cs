@@ -1,5 +1,8 @@
 ﻿using JsonFlatten;
 using Multiformats.Hash;
+using Nethereum.Signer.EIP712;
+using Nethereum.Signer;
+using Nethereum.Util;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PoseidonSharp;
@@ -377,10 +380,131 @@ namespace LoopMintSharp
                  long validUntil,
                  int maxFeeTokenId,
                  string? exchange,
+                 string amount,
                  bool verboseLogging)
         {
             var offchainFee = await loopringMintService.GetOffChainFeeWithAmount(loopringApiKey, accountId, 3, 0, nftBalance.data[0].tokenAddress, verboseLogging);
             var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, nftBalance.data[0].tokenId, verboseLogging);
+
+            //Calculate eddsa signautre
+            BigInteger[] poseidonInputs =
+    {
+                                    Utils.ParseHexUnsigned(exchange),
+                                    (BigInteger) accountId,
+                                    (BigInteger) 0,
+                                    (BigInteger) nftBalance.data[0].tokenId,
+                                    BigInteger.Parse(amount),
+                                    (BigInteger) maxFeeTokenId,
+                                    BigInteger.Parse(offchainFee.fees[maxFeeTokenId].fee),
+                                    Utils.ParseHexUnsigned("0x9cde4366824d9410fb2e2f885601933a926f40d7"),
+                                    (BigInteger) 0,
+                                    (BigInteger) 0,
+                                    (BigInteger) validUntil,
+                                    (BigInteger) storageId.offchainId
+                    };
+            Poseidon poseidon = new Poseidon(13, 6, 53, "poseidon", 5, _securityTarget: 128);
+            BigInteger poseidonHash = poseidon.CalculatePoseidonHash(poseidonInputs);
+            Eddsa eddsa = new Eddsa(poseidonHash, loopringPrivateKey);
+            string eddsaSignature = eddsa.Sign();
+
+
+            //Calculate ecdsa
+            string primaryTypeName = "Transfer";
+            TypedData eip712TypedData = new TypedData();
+            eip712TypedData.Domain = new Domain()
+            {
+                Name = "Loopring Protocol",
+                Version = "3.6.0",
+                ChainId = 1,
+                VerifyingContract = "0x0BABA1Ad5bE3a5C0a66E7ac838a129Bf948f1eA4",
+            };
+            eip712TypedData.PrimaryType = primaryTypeName;
+            eip712TypedData.Types = new Dictionary<string, MemberDescription[]>()
+            {
+                ["EIP712Domain"] = new[]
+                    {
+                                            new MemberDescription {Name = "name", Type = "string"},
+                                            new MemberDescription {Name = "version", Type = "string"},
+                                            new MemberDescription {Name = "chainId", Type = "uint256"},
+                                            new MemberDescription {Name = "verifyingContract", Type = "address"},
+                                        },
+                [primaryTypeName] = new[]
+                    {
+                                            new MemberDescription {Name = "from", Type = "address"},            // payerAddr
+                                            new MemberDescription {Name = "to", Type = "address"},              // toAddr
+                                            new MemberDescription {Name = "tokenID", Type = "uint16"},          // token.tokenId 
+                                            new MemberDescription {Name = "amount", Type = "uint96"},           // token.volume 
+                                            new MemberDescription {Name = "feeTokenID", Type = "uint16"},       // maxFee.tokenId
+                                            new MemberDescription {Name = "maxFee", Type = "uint96"},           // maxFee.volume
+                                            new MemberDescription {Name = "validUntil", Type = "uint32"},       // validUntill
+                                            new MemberDescription {Name = "storageID", Type = "uint32"}         // storageId
+                                        },
+
+            };
+            eip712TypedData.Message = new[]
+            {
+                                    new MemberValue {TypeName = "address", Value = minterAddress},
+                                    new MemberValue {TypeName = "address", Value = "0x9cde4366824d9410fb2e2f885601933a926f40d7"},
+                                    new MemberValue {TypeName = "uint16", Value = nftBalance.data[0].tokenId},
+                                    new MemberValue {TypeName = "uint96", Value = BigInteger.Parse(amount)},
+                                    new MemberValue {TypeName = "uint16", Value = maxFeeTokenId},
+                                    new MemberValue {TypeName = "uint96", Value = BigInteger.Parse(offchainFee.fees[maxFeeTokenId].fee)},
+                                    new MemberValue {TypeName = "uint32", Value = validUntil},
+                                    new MemberValue {TypeName = "uint32", Value = storageId.offchainId},
+                                };
+
+            TransferTypedData typedData = new TransferTypedData()
+            {
+                domain = new TransferTypedData.Domain()
+                {
+                    name = "Loopring Protocol",
+                    version = "3.6.0",
+                    chainId = 1,
+                    verifyingContract = "0x0BABA1Ad5bE3a5C0a66E7ac838a129Bf948f1eA4",
+                },
+                message = new TransferTypedData.Message()
+                {
+                    from = minterAddress,
+                    to = "0x9cde4366824d9410fb2e2f885601933a926f40d7",
+                    tokenID = nftBalance.data[0].tokenId,
+                    amount =  amount,
+                    feeTokenID = maxFeeTokenId,
+                    maxFee = offchainFee.fees[maxFeeTokenId].fee,
+                    validUntil = (int)validUntil,
+                    storageID = storageId.offchainId
+                },
+                primaryType = primaryTypeName,
+                types = new TransferTypedData.Types()
+                {
+                    EIP712Domain = new List<Type>()
+                                        {
+                                            new Type(){ name = "name", type = "string"},
+                                            new Type(){ name="version", type = "string"},
+                                            new Type(){ name="chainId", type = "uint256"},
+                                            new Type(){ name="verifyingContract", type = "address"},
+                                        },
+                    Transfer = new List<Type>()
+                                        {
+                                            new Type(){ name = "from", type = "address"},
+                                            new Type(){ name = "to", type = "address"},
+                                            new Type(){ name = "tokenID", type = "uint16"},
+                                            new Type(){ name = "amount", type = "uint96"},
+                                            new Type(){ name = "feeTokenID", type = "uint16"},
+                                            new Type(){ name = "maxFee", type = "uint96"},
+                                            new Type(){ name = "validUntil", type = "uint32"},
+                                            new Type(){ name = "storageID", type = "uint32"},
+                                        }
+                }
+            };
+
+            Eip712TypedDataSigner signer = new Eip712TypedDataSigner();
+            var ethECKey = new Nethereum.Signer.EthECKey(layer1PrivateKey.Replace("0x", ""));
+            var encodedTypedData = signer.EncodeTypedData(eip712TypedData);
+            var ECDRSASignature = ethECKey.SignAndCalculateV(Sha3Keccack.Current.CalculateHash(encodedTypedData));
+            var serializedECDRSASignature = EthECDSASignature.CreateStringSignature(ECDRSASignature);
+            var ecdsaSignature = serializedECDRSASignature + "0" + (int)2;
+
+
             return "";
         }
     }
