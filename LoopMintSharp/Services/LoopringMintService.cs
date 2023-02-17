@@ -103,7 +103,7 @@ namespace LoopMintSharp
             }
             catch (HttpRequestException httpException)
             {
-                Console.WriteLine($"Error getting off chain fee: {httpException.Message}");
+                Console.WriteLine($"Error getting off chain fee: {httpException.StatusCode}");
                 return null;
             }
         }
