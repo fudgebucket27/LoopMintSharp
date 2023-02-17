@@ -6,12 +6,7 @@ using Nethereum.Util;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PoseidonSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using LoopDropSharp;
 using Type = LoopDropSharp.Type;
 using LoopMintSharp.Models;
@@ -529,7 +524,7 @@ namespace LoopMintSharp
             redPacketNft.numbers = amountOfPackets;
             redPacketNft.signerFlag = false;
             redPacketNft.templateId = 0;
-            redPacketNft.type = new RedPacketNftType()
+            redPacketNft.type = new Models.Type()
             {
                 partition = 1,
                 mode = 1,

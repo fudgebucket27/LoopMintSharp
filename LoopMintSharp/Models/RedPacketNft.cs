@@ -32,12 +32,12 @@ namespace LoopMintSharp.Models
         public string numbers { get; set; }
         public bool signerFlag { get; set; }
         public int templateId { get; set; }
-        public RedPacketNftType type { get; set; }
+        public Type type { get; set; }
         public long validSince { get; set; }
         public long validUntil { get; set; }
     }
 
-    public class RedPacketNftType
+    public class Type
     {
         public int partition { get; set; }
         public int mode { get; set; }
