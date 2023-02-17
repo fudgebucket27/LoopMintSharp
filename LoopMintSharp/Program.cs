@@ -311,7 +311,7 @@ else if (args[0].Trim() == "-mintredpacketnft")
     var amountOfNftsPerPacket = "1";
     var amountOfPackets = "1";
     Console.WriteLine(nftBalance.data[0].tokenAddress);
-    var offchainFee = await minter.GetMintFeeWithAmount(loopringApiKey, accountId, nftBalance.data[0].tokenAddress, verboseLogging);
+    var offchainFee = await minter.GetMintFeeWithAmount(loopringApiKey, accountId, "0xbeb2f2367c1e79003dffa34f16a2b933624a6e05", verboseLogging);
     var mintRedPacketNft = await minter.MintRedPacketNft(loopringApiKey, loopringPrivateKey, layer1PrivateKey, minterAddress, accountId, nftBalance, validUntil, maxFeeTokenId, exchange, amountOfNftsPerPacket, amountOfPackets, verboseLogging);
 }
 else
