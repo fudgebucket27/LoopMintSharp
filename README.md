@@ -88,6 +88,20 @@ macOS users:
 ```batch
 ./LoopMintSharp -legacymintcollection -royaltyAddress 0x36Cd6b3b9329c04df55d55D41C257a5fdD387ACd
 ```
+## 4. Minting red packet nfts (only in v3.0.4 and up)
+**All commands must be done in a command line window opened in the same folder as the unzipped LoopMintSharp**
+**You need to have filled out the "Layer1PrivateKey" in the appsettings.json file with your own Layer 1 private key, this needs to come from the same wallet associated with your Loopring layer 2 address.**
+
+Red packets nfts can be batch minted by entering your data into the included nftData.txt file
+
+```batch 
+0x09ad0103c3b15dcc6c7465308b4cbcf68ef8dd6c9568b0e501f90100b339e1bc,1,1,30,false
+0x17b92c6e88f09029ca125c11fa5d19e2eb028c2ef7ad351f16366f6d47d20f38,2,6,15,true
+```
+
+It needs to be a comma seperated list of values.
+
+The first value is the nftData, the second value is the amount of red packets, the third value is the amount of nfts per red packet, the fourth value is the amount of days the red packet is valid for and the fifth value is a true/false value on whether the red packet should be randomly split amongst recievers.
 
 # Compiling yourself
 If compiling yourself. You need to generate an appsettings.json file in the project directory with the "Copy to Output directory" set to "Copy Always". The appsettings.json file should look like the following, remember to keep these values private and do not share with anyone!
@@ -97,6 +111,7 @@ If compiling yourself. You need to generate an appsettings.json file in the proj
   "Settings": {
     "LoopringApiKey": "kd", //Your loopring api key
     "LoopringPrivateKey": "0x", //Your loopring private key
+    "Layer1PrivateKey": "", //Your layer 1 private key
     "LoopringAddress": "0x", //Your loopring address
     "LoopringAccountId": 40940, //Your loopring account id 
     "NftAmount": 1, //Amount of NFT Editions per mint, number between 1 - 10 000, For 1 to 1 NFTs leave it as 1
