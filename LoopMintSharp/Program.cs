@@ -360,16 +360,26 @@ else if (args[0].Trim() == "-mintredpacketnft")
         {
             currentLine = currentLine.Trim();
             var lineData = currentLine.Split(',');
-            if(lineData.Length != 5)
+            count++;
+            if (lineData.Length != 5)
             {
                 Console.WriteLine("This line is not correct. Please supply the nftData(string),amountOfNftsPerPacket(int),amountOfPackets(int),validUntilDays(int),isRandomSplit(boolean) as a comma seperated list of values...");
+                continue;
             }
-            count++;
             Console.WriteLine($"Attempting mint {count} out of {lineCount} Red Packet NFTs");
             string nftData = lineData[0];
             var nftBalance = await minter.GetTokenIdWithCheck(loopringApiKey, accountId, nftData, verboseLogging);
-            var amountOfNftsPerPacket = lineData[1];
-            var amountOfPackets = lineData[2];
+            if(nftBalance.data.Count == 0)
+            {
+                Console.WriteLine("You don't seem to hold this NFT in your wallet! Skipping..");
+                RedPacketNftMintResponse packetNftMintResponse = new RedPacketNftMintResponse();
+                packetNftMintResponse.errorMessage = "Not held in wallet";
+                packetNftMintResponse.nftData = nftData;
+                mintResponses.Add(packetNftMintResponse);
+                continue;
+            }
+            var amountOfPackets = lineData[1];
+            var amountOfNftsPerPacket = lineData[2];
             var validUntilDays = int.Parse(lineData[3]);
             var isRandomSplit = bool.Parse(lineData[4]);
             var mintResponse = await minter.MintRedPacketNft(loopringApiKey, loopringPrivateKey, layer1PrivateKey, minterAddress, accountId, nftBalance, validUntilDays, maxFeeTokenId, exchange, amountOfNftsPerPacket, amountOfPackets, isRandomSplit, verboseLogging);
