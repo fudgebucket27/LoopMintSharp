@@ -104,6 +104,8 @@ It needs to be a comma seperated list of values.
 
 The first value is the nftData(Use maize to collect the nftData: https://github.com/cobmin/Maize), the second value is the amount of red packets, the third value is the amount of nfts per red packet, the fourth value is the amount of days the red packet is valid for and the fifth value is a true/false value on whether the red packet should be randomly split amongst recievers.
 
+QR codes for the red packets will be generated in the folder of LoopMintSharp after minting is done.
+
 # Compiling yourself
 If compiling yourself. You need to generate an appsettings.json file in the project directory with the "Copy to Output directory" set to "Copy Always". The appsettings.json file should look like the following, remember to keep these values private and do not share with anyone!
 
