@@ -360,6 +360,10 @@ else if (args[0].Trim() == "-mintredpacketnft")
         {
             currentLine = currentLine.Trim();
             var lineData = currentLine.Split(',');
+            if(lineData.Length != 5)
+            {
+                Console.WriteLine("This line is not correct. Please supply the nftData(string),amountOfNftsPerPacket(int),amountOfPackets(int),validUntilDays(int),isRandomSplit(boolean) as a comma seperated list of values...");
+            }
             count++;
             Console.WriteLine($"Attempting mint {count} out of {lineCount} Red Packet NFTs");
             string nftData = lineData[0];
@@ -393,8 +397,17 @@ else if (args[0].Trim() == "-mintredpacketnft")
                 // Output to Stream -> File
                 using var image = surface.Snapshot();
                 using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-                using var stream = File.OpenWrite($"{mintResponse.hash}.png");
-                data.SaveTo(stream);
+
+                if(!string.IsNullOrEmpty(nftBalance.data[0].metadata.basename.name)) //use name
+                {
+                    using var stream = File.OpenWrite($"{nftBalance.data[0].metadata.basename.name}.png");
+                    data.SaveTo(stream);
+                }
+                else //Use hash
+                {
+                    using var stream = File.OpenWrite($"{mintResponse.hash}.png");
+                    data.SaveTo(stream);
+                }
             }
         }
     }

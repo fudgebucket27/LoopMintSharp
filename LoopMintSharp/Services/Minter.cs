@@ -526,7 +526,7 @@ namespace LoopMintSharp
             luckyToken.memo = $"LuckTokenSendBy{accountId}";
             luckyToken.eddsaSig = eddsaSignature;
             redPacketNft.luckyToken = luckyToken;
-            redPacketNft.memo = "minted with loopmintsharp";
+            redPacketNft.memo = "Spread the love <3";
             redPacketNft.nftData = nftBalance.data[0].nftData;
             redPacketNft.numbers = amountOfPackets;
             redPacketNft.signerFlag = false;

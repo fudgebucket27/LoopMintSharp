@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace LoopMintSharp
 {
@@ -21,7 +18,19 @@ namespace LoopMintSharp
         public string deploymentStatus { get; set; }
         public bool isCounterFactualNFT { get; set; }
 
+        public Metadata metadata { get; set; }
 
+    }
+
+    public class Metadata
+    {
+        [JsonProperty(PropertyName = "base")]
+        public Base basename { get; set; }
+    }
+
+    public class Base
+    {
+        public string name { get; set; }
     }
 
     public class Pending

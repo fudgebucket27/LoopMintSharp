@@ -266,17 +266,20 @@ namespace LoopMintSharp
             {
                 var response = await _client.ExecuteAsync(request);
                 var data = JsonConvert.DeserializeObject<RedPacketNftMintResponse>(response.Content!);
-                if (response.IsSuccessful)
+                data.nftData = redPacketNft.nftData;
+                if (response.IsSuccessful && verboseLogging)
                 {
                     Console.WriteLine($"Red packet nft mint response: {data}");
                 }
                 else if (!response.IsSuccessful && verboseLogging)
                 {
                     Console.WriteLine($"Error creating minting red packet nft: {response.Content}");
+                    data.errorMessage = response.Content;
                 }
                 else if (!response.IsSuccessful)
                 {
                     Console.WriteLine($"Error creating minting red packet nft: {response.Content}");
+                    data.errorMessage = response.Content;
                 }
                 return data;
             }
@@ -288,7 +291,7 @@ namespace LoopMintSharp
                     Console.WriteLine($"Error creating minting red packet nft!: {httpException.Message}");
                 }
                 data.errorMessage = httpException.Message;
-                return null;
+                return data;
             }
         }
 
@@ -299,6 +302,7 @@ namespace LoopMintSharp
             request.AddHeader("x-api-key", apiKey);
             request.AddParameter("accountId", accountId);
             request.AddParameter("nftDatas", nftData);
+            request.AddParameter("metadata", "true");
             try
             {
                 var response = await _client.GetAsync(request);
