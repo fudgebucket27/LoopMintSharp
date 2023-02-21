@@ -101,7 +101,7 @@ Example nftData.txt file:
 0x17b92c6e88f09029ca125c11fa5d19e2eb028c2ef7ad351f16366f6d47d20f38,2,6,15,true
 ```
 
-Each line contains a comma seperated list of values. The first value is the nftData(Use maize to collect the nftData: https://github.com/cobmin/Maize), the second value is the amount of red packets, the third value is the amount of nfts per red packet, the fourth value is the amount of days the red packet is valid for and the fifth value is a true/false value on whether the red packet should be randomly split amongst recievers.
+Each line contains a comma seperated list of values. The first value is the nftData. To collect nftData you can use maize to retrieve it: https://github.com/cobmin/Maize, otherwise if you minted with LoopMintSharp the CSV report will contain the nftData.The second value is the amount of red packets, the third value is the amount of nfts per red packet, the fourth value is the amount of days the red packet is valid for and the fifth value is a true/false value on whether the red packet should be randomly split amongst recievers.
 
 The total Amount of Red Packets multiplied by the Amount of Nfts per red packet can not exceed the amount of editions of an NFT you hold in your wallet. 
 
