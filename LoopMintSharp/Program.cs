@@ -351,6 +351,9 @@ else if (args[0].Trim() == "-mintredpacketnft")
         }
     }
 
+    Console.Write("Enter a memo:");
+    string memo = Console.ReadLine().Trim();
+
     List<RedPacketNftMintResponse> mintResponses = new List<RedPacketNftMintResponse>();
     using (StreamReader sr = new StreamReader("nftData.txt"))
     {
@@ -382,7 +385,7 @@ else if (args[0].Trim() == "-mintredpacketnft")
             var amountOfNftsPerPacket = lineData[2];
             var validUntilDays = int.Parse(lineData[3]);
             var isRandomSplit = bool.Parse(lineData[4]);
-            var mintResponse = await minter.MintRedPacketNft(loopringApiKey, loopringPrivateKey, layer1PrivateKey, minterAddress, accountId, nftBalance, validUntilDays, maxFeeTokenId, exchange, amountOfNftsPerPacket, amountOfPackets, isRandomSplit, verboseLogging);
+            var mintResponse = await minter.MintRedPacketNft(loopringApiKey, loopringPrivateKey, layer1PrivateKey, minterAddress, accountId, nftBalance, validUntilDays, maxFeeTokenId, exchange, amountOfNftsPerPacket, amountOfPackets, isRandomSplit, memo, verboseLogging);
             mintResponses.Add(mintResponse);
             Console.SetCursorPosition(0, Console.CursorTop - 1);
             if (!string.IsNullOrEmpty(mintResponse.errorMessage))

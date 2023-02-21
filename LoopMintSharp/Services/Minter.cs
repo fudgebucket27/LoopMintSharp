@@ -117,7 +117,7 @@ namespace LoopMintSharp
                  string? nftFactory,
                  string? exchange,
                  string currentCid,
-                 bool verboseLogging, 
+                 bool verboseLogging,
                  string royaltyAddress)
         {
             #region Get storage id, token address and offchain fee
@@ -385,6 +385,7 @@ namespace LoopMintSharp
                  string amountOfNftsPerPacket,
                  string amountOfPackets,
                  bool isRandomSplit,
+                 string memo,
                  bool verboseLogging)
         {
             var dateTimeNow = DateTimeOffset.UtcNow;
@@ -527,7 +528,7 @@ namespace LoopMintSharp
             luckyToken.memo = $"LuckTokenSendBy{accountId}";
             luckyToken.eddsaSig = eddsaSignature;
             redPacketNft.luckyToken = luckyToken;
-            redPacketNft.memo = "Spread the love <3";
+            redPacketNft.memo = memo;
             redPacketNft.nftData = nftBalance.data[0].nftData;
             redPacketNft.numbers = amountOfPackets;
             redPacketNft.signerFlag = false;
