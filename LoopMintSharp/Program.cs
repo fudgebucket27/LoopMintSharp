@@ -366,7 +366,7 @@ else if (args[0].Trim() == "-mintredpacketnft")
             count++;
             if (lineData.Length != 5)
             {
-                Console.WriteLine("This line is not correct. Please supply the nftData(string),amountOfNftsPerPacket(int),amountOfPackets(int),validUntilDays(int),isRandomSplit(boolean) as a comma seperated list of values...");
+                Console.WriteLine("This line is not correct. Please supply the nftData(string),amountOfPackets(int),amountOfNftsPerPacket(int),validUntilDays(int),isRandomSplit(boolean) as a comma seperated list of values...");
                 continue;
             }
             Console.WriteLine($"Attempting mint {count} out of {lineCount} Red Packet NFTs");
