@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LoopMintSharp.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ namespace LoopMintSharp
         Task<StorageId> GetNextStorageId(string apiKey, int accountId, int sellTokenId, bool verboseLogging);
         Task<CounterFactualNft> ComputeTokenAddress(string apiKey, CounterFactualNftInfo counterFactualNftInfo, bool verboseLogging);
         Task<OffchainFee> GetOffChainFee(string apiKey, int accountId, int requestType, string tokenAddress, bool verboseLogging);
+        Task<OffchainFee> GetOffChainFeeWithAmount(string apiKey, int accountId, int amount, int requestType, string tokenAddress, bool verboseLogging);
         Task<MintResponseData> MintNft(
             string apiKey,
             string exchange,
@@ -32,6 +34,16 @@ namespace LoopMintSharp
             string eddsaSignature,
             bool verboseLogging,
             string royaltyAddress);
+
+        Task<RedPacketNftMintResponse> MintRedPacketNft
+        (
+            string apiKey,
+            string apiSig,
+            RedPacketNft redPacketNft,
+            bool verboseLogging
+        );
+
+        Task<NftBalance> GetTokenIdWithCheck(string apiKey, int accountId, string nftData, bool verboseLogging);
 
         Task<CreateCollectionResult> CreateNftCollection(
             string apiKey,

@@ -1,4 +1,5 @@
 ﻿using JsonFlatten;
+using LoopMintSharp.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -73,6 +74,27 @@ namespace LoopMintSharp
             request.AddParameter("accountId", accountId);
             request.AddParameter("requestType", requestType);
             request.AddParameter("tokenAddress", tokenAddress);
+            try
+            {
+                var response = await _client.GetAsync(request);
+                var data = JsonConvert.DeserializeObject<OffchainFee>(response.Content!);
+                return data;
+            }
+            catch (HttpRequestException httpException)
+            {
+                Console.WriteLine($"Error getting off chain fee: {httpException.Message}");
+                return null;
+            }
+        }
+
+        public async Task<OffchainFee> GetOffChainFeeWithAmount(string apiKey, int accountId, int amount, int requestType, string tokenAddress, bool verboseLogging)
+        {
+            var request = new RestRequest("api/v3/user/nft/offchainFee");
+            request.AddHeader("x-api-key", apiKey);
+            request.AddParameter("accountId", accountId);
+            request.AddParameter("amount", amount); 
+            request.AddParameter("requestType", requestType);
+            request.AddParameter("tokenAddress", "0xbeb2f2367c1e79003dffa34f16a2b933624a6e05");
             try
             {
                 var response = await _client.GetAsync(request);
@@ -225,6 +247,73 @@ namespace LoopMintSharp
                 if (verboseLogging)
                 {
                     Console.WriteLine($"Error finding collection: {httpException.Message}");
+                }
+                return null;
+            }
+        }
+
+        public async Task<RedPacketNftMintResponse> MintRedPacketNft(string apiKey, string apiSig, RedPacketNft redPacketNft, bool verboseLogging)
+        {
+            var request = new RestRequest("/api/v3/luckyToken/sendLuckyToken", Method.Post);
+            request.AddHeader("x-api-key", apiKey);
+            request.AddHeader("x-api-sig", apiSig);
+            request.AddHeader("Accept", "application/json");
+            var jObject = JObject.Parse(JsonConvert.SerializeObject(redPacketNft));
+            var jObjectFlattened = jObject.Flatten();
+            var jObjectFlattenedString = JsonConvert.SerializeObject(jObjectFlattened);
+            request.AddParameter("application/json", jObjectFlattenedString, ParameterType.RequestBody);
+            try
+            {
+                var response = await _client.ExecuteAsync(request);
+                var data = JsonConvert.DeserializeObject<RedPacketNftMintResponse>(response.Content!);
+                data.nftData = redPacketNft.nftData;
+                if (response.IsSuccessful && verboseLogging)
+                {
+                    Console.WriteLine($"Red packet nft mint response: {data}");
+                }
+                else if (!response.IsSuccessful && verboseLogging)
+                {
+                    Console.WriteLine($"Error creating minting red packet nft: {response.Content}");
+                    data.errorMessage = response.Content;
+                }
+                else if (!response.IsSuccessful)
+                {
+                    Console.WriteLine($"Error creating minting red packet nft: {response.Content}");
+                    data.errorMessage = response.Content;
+                }
+                return data;
+            }
+            catch (HttpRequestException httpException)
+            {
+                var data = new RedPacketNftMintResponse();
+                if (verboseLogging)
+                {
+                    Console.WriteLine($"Error creating minting red packet nft!: {httpException.Message}");
+                }
+                data.errorMessage = httpException.Message;
+                return data;
+            }
+        }
+
+        public async Task<NftBalance> GetTokenIdWithCheck(string apiKey, int accountId, string nftData, bool verboseLogging)
+        {
+            var data = new NftBalance();
+            var request = new RestRequest("/api/v3/user/nft/balances");
+            request.AddHeader("x-api-key", apiKey);
+            request.AddParameter("accountId", accountId);
+            request.AddParameter("nftDatas", nftData);
+            request.AddParameter("metadata", "true");
+            try
+            {
+                var response = await _client.GetAsync(request);
+                data = JsonConvert.DeserializeObject<NftBalance>(response.Content!);
+                return data;
+            }
+            catch (HttpRequestException httpException)
+            {
+                if (verboseLogging)
+                {
+                    Console.WriteLine($"Error getting Token Id: {httpException.Message}");
                 }
                 return null;
             }

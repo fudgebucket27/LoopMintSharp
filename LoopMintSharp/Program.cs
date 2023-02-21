@@ -2,8 +2,13 @@
 using Microsoft.Extensions.Configuration;
 using CsvHelper;
 using System.Globalization;
+using static System.Net.Mime.MediaTypeNames;
+using System.Drawing;
+using SkiaSharp.QrCode;
+using SkiaSharp;
+using LoopMintSharp.Models;
 
-if(args.Length == 0)
+if (args.Length == 0)
 {
     Console.WriteLine("LoopMintSharp needs arguments passed from command line. You can use -createcollection to create a collection, -legacymintcollection to mint on the legacy contract,or -mintcollection to mint to a collection to the latest contract");
     Console.WriteLine("eg: LoopMintSharp -createcollection");
@@ -22,6 +27,7 @@ Settings settings = config.GetRequiredSection("Settings").Get<Settings>();
 Minter minter = new Minter();
 string loopringApiKey = settings.LoopringApiKey;//you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
 string loopringPrivateKey = settings.LoopringPrivateKey; //you can either set an environmental variable or input it here directly. You can export this from your account using loopring.io
+var layer1PrivateKey = settings.Layer1PrivateKey;
 var minterAddress = settings.LoopringAddress; //your loopring address
 var accountId = settings.LoopringAccountId; //your loopring account id
 var nftType = settings.NftType; //nfttype 0 = ERC1155, shouldn't need to change this unless you want ERC721 which is 1
@@ -303,11 +309,135 @@ else if (args[0].Trim() == "-mintcollection")
         Console.WriteLine($"CSV can be found in the following location: {AppDomain.CurrentDomain.BaseDirectory + csvName}");
     }
 }
-else
+else if (args[0].Trim() == "-mintredpacketnft")
 {
+    var lineCount = File.ReadLines("nftData.txt").Count();
+    var count = 0;
+    if (skipMintFeePrompt == false)
+    {
+        var offChainFee = await minter.GetMintFeeWithAmount(loopringApiKey, accountId, "0xbeb2f2367c1e79003dffa34f16a2b933624a6e05", verboseLogging);
+        var fee = offChainFee.fees[maxFeeTokenId].fee;
+        double feeAmount = lineCount * Double.Parse(fee);
+        if (maxFeeTokenId == 0)
+        {
+            Console.WriteLine($"It will cost around {TokenAmountConverter.ToString(feeAmount, 18)} ETH to mint {lineCount} Red Packet NFTs");
+        }
+        else if (maxFeeTokenId == 1)
+        {
+            Console.WriteLine($"It will cost around {TokenAmountConverter.ToString(feeAmount, 18)} LRC to mint {lineCount} Red Packet NFTs");
+        }
+        else
+        {
+            Console.WriteLine("Can only use MaxFeeTokenId of 0 for ETH or MaxFeeTokenId of 1 for LRC. Please set this correctly in your appsettings.json file!");
+            System.Environment.Exit(0);
+        }
+
+        Console.Write("Continue with minting? Enter y for yes or n for no:");
+        string continueMinting = Console.ReadLine().Trim().ToLower();
+        while (continueMinting != "y" && continueMinting != "n")
+        {
+            Console.Write("Continue with minting? Enter y for yes or n for no:");
+            continueMinting = Console.ReadLine().Trim().ToLower();
+        }
+
+        if (continueMinting == "n")
+        {
+            Console.WriteLine("Minting cancelled!");
+            System.Environment.Exit(0);
+        }
+        else if (continueMinting == "y")
+        {
+            Console.WriteLine($"Minting started on...");
+        }
+    }
+
+    List<RedPacketNftMintResponse> mintResponses = new List<RedPacketNftMintResponse>();
+    using (StreamReader sr = new StreamReader("nftData.txt"))
+    {
+        string currentLine;
+        //currentCid will be null when the StreamReader reaches the end of file
+        while ((currentLine = sr.ReadLine()) != null)
+        {
+            currentLine = currentLine.Trim();
+            var lineData = currentLine.Split(',');
+            count++;
+            if (lineData.Length != 5)
+            {
+                Console.WriteLine("This line is not correct. Please supply the nftData(string),amountOfNftsPerPacket(int),amountOfPackets(int),validUntilDays(int),isRandomSplit(boolean) as a comma seperated list of values...");
+                continue;
+            }
+            Console.WriteLine($"Attempting mint {count} out of {lineCount} Red Packet NFTs");
+            string nftData = lineData[0];
+            var nftBalance = await minter.GetTokenIdWithCheck(loopringApiKey, accountId, nftData, verboseLogging);
+            if(nftBalance.data.Count == 0)
+            {
+                Console.WriteLine("You don't seem to hold this NFT in your wallet! Skipping..");
+                RedPacketNftMintResponse packetNftMintResponse = new RedPacketNftMintResponse();
+                packetNftMintResponse.errorMessage = "Not held in wallet";
+                packetNftMintResponse.nftData = nftData;
+                mintResponses.Add(packetNftMintResponse);
+                continue;
+            }
+            var amountOfPackets = lineData[1];
+            var amountOfNftsPerPacket = lineData[2];
+            var validUntilDays = int.Parse(lineData[3]);
+            var isRandomSplit = bool.Parse(lineData[4]);
+            var mintResponse = await minter.MintRedPacketNft(loopringApiKey, loopringPrivateKey, layer1PrivateKey, minterAddress, accountId, nftBalance, validUntilDays, maxFeeTokenId, exchange, amountOfNftsPerPacket, amountOfPackets, isRandomSplit, verboseLogging);
+            mintResponses.Add(mintResponse);
+            Console.SetCursorPosition(0, Console.CursorTop - 1);
+            if (!string.IsNullOrEmpty(mintResponse.errorMessage))
+            {
+                Console.WriteLine($"Mint {count} out of {lineCount} Red Packet NFTs was UNSUCCESSFUL. ERROR MESSAGE: {mintResponse.errorMessage}");
+            }
+            else
+            {
+                Console.WriteLine($"Mint {count} out of {lineCount} Red Packet NFTs was SUCCESSFUL");
+                var content = $"https://loopring.io/#/wallet?redpacket&id={mintResponse.hash}&referrer={minterAddress}";
+                using var generator = new QRCodeGenerator();
+
+                // Generate QrCode
+                var qr = generator.CreateQrCode(content, ECCLevel.L);
+
+                // Render to canvas
+                var info = new SKImageInfo(512, 512);
+                using var surface = SKSurface.Create(info);
+                var canvas = surface.Canvas;
+                canvas.Render(qr, info.Width, info.Height);
+
+                // Output to Stream -> File
+                using var image = surface.Snapshot();
+                using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+
+                if(!string.IsNullOrEmpty(nftBalance.data[0].metadata.basename.name)) //use name
+                {
+                    using var stream = File.OpenWrite($"{nftBalance.data[0].metadata.basename.name}-{DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.png");
+                    data.SaveTo(stream);
+                }
+                else //Use hash
+                {
+                    using var stream = File.OpenWrite($"{mintResponse.hash}-{DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.png");
+                    data.SaveTo(stream);
+                }
+            }
+        }
+    }
+
+    string csvName = $"{DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.csv";
+    using (var writer = new StreamWriter(csvName))
+    using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+    {
+        csv.WriteRecords(mintResponses);
+        Console.WriteLine($"Generated Mint Report");
+        Console.WriteLine($"CSV can be found in the following location: {AppDomain.CurrentDomain.BaseDirectory + csvName}");
+    }
+}
+else
+        {
     Console.WriteLine("Invalid arguments. You can use -createcollection to create a collection, -legacymintcollection to mint on the legacy contract,or -mintcollection to mint to a collection to the latest contract");
     Console.WriteLine("eg: LoopMintSharp -createcollection");
     Console.WriteLine("eg: LoopMintSharp -legacymintcollection");
     Console.WriteLine("When using -mintcollection pass it the collection contract address as well:");
     Console.WriteLine("eg: LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd");
+    Console.WriteLine("When using -mintcollection pass it the collection contract address as well:");
+    Console.WriteLine("LoopMintSharp -mintredpacketnft");
 }

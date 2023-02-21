@@ -9,6 +9,7 @@ namespace LoopMintSharp
     public class Fee
     {
         public string token { get; set; }
+        public int tokenId { get; set; }
         public string fee { get; set; }
         public int discount { get; set; }
     }
