@@ -105,7 +105,7 @@ Each line contains a comma seperated list of values. The first value is the nftD
 
 The total Amount of Red Packets multiplied by the Amount of Nfts per red packet can not exceed the amount of editions of an NFT you hold in your wallet. 
 
-For example if you hold a balance of 10 editions for an NFT, you can create 2 red packets multipled by 5 nfts per red packet, total = 10. You can not create 3 red packets multipled by 5 nfts per red packet. total = 15.
+For example if you hold a balance of 10 editions for an NFT, you can create 2 red packets multipled by 5 nfts per red packet, total = 10. You can not create 3 red packets multipled by 5 nfts per red packet, total = 15.
 
 Once the nftData.txt file is setup run the following command to start minting
 
