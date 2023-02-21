@@ -128,7 +128,7 @@ If compiling yourself. You need to generate an appsettings.json file in the proj
   "Settings": {
     "LoopringApiKey": "kd", //Your loopring api key
     "LoopringPrivateKey": "0x", //Your loopring private key
-    "Layer1PrivateKey": "", //Your layer 1 private key
+    "Layer1PrivateKey": "", //Your layer 1 private key, only needed to mint red packet nfts
     "LoopringAddress": "0x", //Your loopring address
     "LoopringAccountId": 40940, //Your loopring account id 
     "NftAmount": 1, //Amount of NFT Editions per mint, number between 1 - 10 000, For 1 to 1 NFTs leave it as 1
