@@ -387,8 +387,9 @@ namespace LoopMintSharp
                  bool isRandomSplit,
                  bool verboseLogging)
         {
-            long validSince = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            var validUntil = DateTimeOffset.UtcNow.AddDays(validUntilDays).ToUnixTimeSeconds(); ;
+            var dateTimeNow = DateTimeOffset.UtcNow;
+            long validSince = dateTimeNow.ToUnixTimeSeconds();
+            var validUntil = dateTimeNow.AddDays(validUntilDays).ToUnixTimeSeconds(); ;
             var offchainFee = await loopringMintService.GetOffChainFeeWithAmount(loopringApiKey, accountId, 0, 11, nftBalance.data[0].tokenAddress, verboseLogging);
             var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, nftBalance.data[0].tokenId, verboseLogging);
 
