@@ -20,6 +20,8 @@ namespace LoopMintSharp
         public Pending pending { get; set; }
         public string deploymentStatus { get; set; }
         public bool isCounterFactualNFT { get; set; }
+
+
     }
 
     public class Pending
