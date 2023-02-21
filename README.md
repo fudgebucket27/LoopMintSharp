@@ -104,6 +104,17 @@ It needs to be a comma seperated list of values.
 
 The first value is the nftData(Use maize to collect the nftData: https://github.com/cobmin/Maize), the second value is the amount of red packets, the third value is the amount of nfts per red packet, the fourth value is the amount of days the red packet is valid for and the fifth value is a true/false value on whether the red packet should be randomly split amongst recievers.
 
+Once the nftData.txt file is setup run the following command to start minting
+
+```batch
+LoopMintSharp -mintredpacketnft
+```
+
+macOS users: 
+```batch
+./LoopMintSharp -mintredpacketnft
+```
+
 QR codes for the red packets will be generated in the folder of LoopMintSharp after minting is done.
 
 # Compiling yourself
