@@ -93,7 +93,7 @@ macOS users:
 
 **You need to have filled out the "Layer1PrivateKey" in the appsettings.json file with your own Layer 1 private key, this needs to come from the same wallet associated with your Loopring layer 2 address.**
 
-Red packets nfts can be batch minted by entering your data into the included nftData.txt file
+LoopMintSharp will mint private red packets. Red packets nfts can be batch minted by entering the appropriate data into the included nftData.txt file
 
 Example nftData.txt file:
 ```batch 
