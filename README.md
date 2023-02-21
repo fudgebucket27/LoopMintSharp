@@ -95,14 +95,17 @@ macOS users:
 
 Red packets nfts can be batch minted by entering your data into the included nftData.txt file
 
+Example nftData.txt file:
 ```batch 
 0x09ad0103c3b15dcc6c7465308b4cbcf68ef8dd6c9568b0e501f90100b339e1bc,1,1,30,false
 0x17b92c6e88f09029ca125c11fa5d19e2eb028c2ef7ad351f16366f6d47d20f38,2,6,15,true
 ```
 
-It needs to be a comma seperated list of values.
+Each line contains a comma seperated list of values. The first value is the nftData(Use maize to collect the nftData: https://github.com/cobmin/Maize), the second value is the amount of red packets, the third value is the amount of nfts per red packet, the fourth value is the amount of days the red packet is valid for and the fifth value is a true/false value on whether the red packet should be randomly split amongst recievers.
 
-The first value is the nftData(Use maize to collect the nftData: https://github.com/cobmin/Maize), the second value is the amount of red packets, the third value is the amount of nfts per red packet, the fourth value is the amount of days the red packet is valid for and the fifth value is a true/false value on whether the red packet should be randomly split amongst recievers.
+The total Amount of Red Packets multiplied by the Amount of Nfts can not exceed the amount of editions of an NFT you hold in your wallet. 
+
+For example if you hold a balance of 10 editions for an NFT, you can create 2 red packets multipled by 5 nfts per red packet, total = 10. You can not create 3 red packets multipled by 5 nfts per red packet. total = 15.
 
 Once the nftData.txt file is setup run the following command to start minting
 
