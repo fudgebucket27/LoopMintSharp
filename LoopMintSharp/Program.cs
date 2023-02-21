@@ -410,12 +410,12 @@ else if (args[0].Trim() == "-mintredpacketnft")
 
                 if(!string.IsNullOrEmpty(nftBalance.data[0].metadata.basename.name)) //use name
                 {
-                    using var stream = File.OpenWrite($"{nftBalance.data[0].metadata.basename.name}.png");
+                    using var stream = File.OpenWrite($"{nftBalance.data[0].metadata.basename.name}-{DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.png");
                     data.SaveTo(stream);
                 }
                 else //Use hash
                 {
-                    using var stream = File.OpenWrite($"{mintResponse.hash}.png");
+                    using var stream = File.OpenWrite($"{mintResponse.hash}-{DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.png");
                     data.SaveTo(stream);
                 }
             }
