@@ -390,7 +390,8 @@ namespace LoopMintSharp
         {
             var dateTimeNow = DateTimeOffset.UtcNow;
             long validSince = dateTimeNow.ToUnixTimeSeconds();
-            var validUntil = dateTimeNow.AddDays(validUntilDays).ToUnixTimeSeconds(); ;
+            var validUntil30Days = dateTimeNow.AddDays(30).ToUnixTimeSeconds();
+            var validUntil = dateTimeNow.AddDays(validUntilDays).ToUnixTimeSeconds();
             var offchainFee = await loopringMintService.GetOffChainFeeWithAmount(loopringApiKey, accountId, 0, 11, nftBalance.data[0].tokenAddress, verboseLogging);
             var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, nftBalance.data[0].tokenId, verboseLogging);
 
@@ -407,7 +408,7 @@ namespace LoopMintSharp
                                     Utils.ParseHexUnsigned("0x9cde4366824d9410fb2e2f885601933a926f40d7"),
                                     (BigInteger) 0,
                                     (BigInteger) 0,
-                                    (BigInteger) validUntil,
+                                    (BigInteger) validUntil30Days,
                                     (BigInteger) storageId.offchainId
                     };
             Poseidon poseidon = new Poseidon(13, 6, 53, "poseidon", 5, _securityTarget: 128);
@@ -457,7 +458,7 @@ namespace LoopMintSharp
                                     new MemberValue {TypeName = "uint96", Value = BigInteger.Parse(amountOfNftsPerPacket) * BigInteger.Parse(amountOfPackets)},
                                     new MemberValue {TypeName = "uint16", Value = maxFeeTokenId},
                                     new MemberValue {TypeName = "uint96", Value = BigInteger.Parse(offchainFee.fees[maxFeeTokenId].fee)},
-                                    new MemberValue {TypeName = "uint32", Value = validUntil},
+                                    new MemberValue {TypeName = "uint32", Value = validUntil30Days},
                                     new MemberValue {TypeName = "uint32", Value = storageId.offchainId},
                                 };
 
@@ -478,7 +479,7 @@ namespace LoopMintSharp
                     amount = (BigInteger.Parse(amountOfNftsPerPacket) * BigInteger.Parse(amountOfPackets)).ToString(),
                     feeTokenID = maxFeeTokenId,
                     maxFee = offchainFee.fees[maxFeeTokenId].fee,
-                    validUntil = (int)validUntil,
+                    validUntil = (int)validUntil30Days,
                     storageID = storageId.offchainId
                 },
                 primaryType = primaryTypeName,
@@ -523,7 +524,7 @@ namespace LoopMintSharp
             luckyToken.amount = (int.Parse(amountOfNftsPerPacket) * int.Parse(amountOfPackets)).ToString();
             luckyToken.feeToken = maxFeeTokenId;
             luckyToken.maxFeeAmount = offchainFee.fees[maxFeeTokenId].fee;
-            luckyToken.validUntil = validUntil;
+            luckyToken.validUntil = validUntil30Days;
             luckyToken.payeeId = 0;
             luckyToken.memo = $"LuckTokenSendBy{accountId}";
             luckyToken.eddsaSig = eddsaSignature;
