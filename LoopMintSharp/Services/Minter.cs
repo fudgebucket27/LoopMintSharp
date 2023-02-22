@@ -401,7 +401,7 @@ namespace LoopMintSharp
                                     (BigInteger) accountId,
                                     (BigInteger) 0,
                                     (BigInteger) nftBalance.data[0].tokenId,
-                                    BigInteger.Parse(amountOfNftsPerPacket),
+                                    BigInteger.Parse(amountOfNftsPerPacket) * BigInteger.Parse(amountOfPackets),
                                     (BigInteger) maxFeeTokenId,
                                     BigInteger.Parse(offchainFee.fees[maxFeeTokenId].fee),
                                     Utils.ParseHexUnsigned("0x9cde4366824d9410fb2e2f885601933a926f40d7"),
@@ -454,7 +454,7 @@ namespace LoopMintSharp
                                     new MemberValue {TypeName = "address", Value = minterAddress},
                                     new MemberValue {TypeName = "address", Value = "0x9cde4366824d9410fb2e2f885601933a926f40d7"},
                                     new MemberValue {TypeName = "uint16", Value = nftBalance.data[0].tokenId},
-                                    new MemberValue {TypeName = "uint96", Value = BigInteger.Parse(amountOfNftsPerPacket)},
+                                    new MemberValue {TypeName = "uint96", Value = BigInteger.Parse(amountOfNftsPerPacket) * BigInteger.Parse(amountOfPackets)},
                                     new MemberValue {TypeName = "uint16", Value = maxFeeTokenId},
                                     new MemberValue {TypeName = "uint96", Value = BigInteger.Parse(offchainFee.fees[maxFeeTokenId].fee)},
                                     new MemberValue {TypeName = "uint32", Value = validUntil},
@@ -475,7 +475,7 @@ namespace LoopMintSharp
                     from = minterAddress,
                     to = "0x9cde4366824d9410fb2e2f885601933a926f40d7",
                     tokenID = nftBalance.data[0].tokenId,
-                    amount =  amountOfNftsPerPacket,
+                    amount = (BigInteger.Parse(amountOfNftsPerPacket) * BigInteger.Parse(amountOfPackets)).ToString(),
                     feeTokenID = maxFeeTokenId,
                     maxFee = offchainFee.fees[maxFeeTokenId].fee,
                     validUntil = (int)validUntil,
@@ -520,7 +520,7 @@ namespace LoopMintSharp
             luckyToken.payeeAddr = "0x9cde4366824d9410fb2e2f885601933a926f40d7";
             luckyToken.storageId = storageId.offchainId;
             luckyToken.token = nftBalance.data[0].tokenId;
-            luckyToken.amount = amountOfNftsPerPacket;
+            luckyToken.amount = (int.Parse(amountOfNftsPerPacket) * int.Parse(amountOfPackets)).ToString();
             luckyToken.feeToken = maxFeeTokenId;
             luckyToken.maxFeeAmount = offchainFee.fees[maxFeeTokenId].fee;
             luckyToken.validUntil = validUntil;
