@@ -93,7 +93,7 @@ macOS users:
 
 **You need to have filled out the "Layer1PrivateKey" in the appsettings.json file with your own Layer 1 private key, this needs to come from the same wallet associated with your Loopring layer 2 address.**
 
-LoopMintSharp will mint private nft red packets. Red packets nfts can be batch minted by entering the appropriate data into the included nftData.txt file
+LoopMintSharp will mint private nft red packets. Red packet nfts can be batch minted by entering the appropriate data into the included nftData.txt file
 
 Example nftData.txt file:
 ```batch 
@@ -105,7 +105,7 @@ Each line contains a comma seperated list of values. The first value is the nftD
 
 The total Amount of Red Packets multiplied by the Amount of Nfts per red packet can not exceed the amount of editions of an NFT you hold in your wallet. 
 
-For example if you hold a balance of 10 editions for an NFT, you can create 2 red packets multipled by 5 nfts per red packet, total = 10. You can not create 3 red packets multipled by 5 nfts per red packet, total = 15.
+For example if you hold a balance of 10 editions for an NFT, you can create 2 red packets multiplied by 5 nfts per red packet, total = 10. You can not create 3 red packets multiplied by 5 nfts per red packet, total = 15.
 
 Once the nftData.txt file is setup run the following command to start minting
 
