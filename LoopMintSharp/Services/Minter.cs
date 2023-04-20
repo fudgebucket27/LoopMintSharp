@@ -325,10 +325,51 @@ namespace LoopMintSharp
             #region Generate Eddsa Signature
 
             //Generate the nft id here
-            Multihash multiHash = Multihash.Parse(currentCid, Multiformats.Base.MultibaseEncoding.Base58Btc);
-            string multiHashString = multiHash.ToString();
-            var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
-            var nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
+            string nftId = "";
+            if (currentCid.StartsWith('b'))
+            {
+
+
+                var cidv1 = currentCid;
+                var apiEndpoint = "http://localhost:5001/api/v0";
+                var remoteFileUrl = $"https://loopring.mypinata.cloud/ipfs/{currentCid}";
+
+                // Step 1: Download the remote file
+                var response = await httpClient.GetAsync(remoteFileUrl);
+                var fileBytes = await response.Content.ReadAsByteArrayAsync();
+
+                // Step 2: Convert the raw bytes into a CIDv0 dag-pb file
+                var postFileUrl = $"{apiEndpoint}/dag/put?format=dag-pb&input-enc=raw&hash=sha2-256";
+                var fileContent = new ByteArrayContent(fileBytes);
+                response = await httpClient.PostAsync(postFileUrl, fileContent);
+                var cidv0 = await response.Content.ReadAsStringAsync();
+
+                // Step 3: Upload the CIDv0 file to IPFS
+                var addUrl = $"{apiEndpoint}/add?pin=true";
+                var fileName = Path.GetFileName(remoteFileUrl);
+                var formData = new MultipartFormDataContent();
+                formData.Add(new ByteArrayContent(fileBytes), "file", fileName);
+                formData.Add(new StringContent(cidv0), "cid-version");
+                response = await httpClient.PostAsync(addUrl, formData);
+
+                // Step 4: Print out the response
+                var responseString = await response.Content.ReadAsStringAsync();
+                responseString = "[" + responseString.Replace(" ", "").Replace("\r", "").Replace("\n", "").Replace("}{", "},{") + "]";
+
+                var responseObject = JsonConvert.DeserializeObject<List<IpfsData>>(responseString);
+                Console.WriteLine($"[Debug] Converted cidv1: {responseObject[0].Name} to cidv0: {responseObject[0].Hash})");
+                Multihash multiHash = Multihash.Parse(responseObject[0].Hash, Multiformats.Base.MultibaseEncoding.Base58Btc);
+                string multiHashString = multiHash.ToString();
+                var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
+                nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
+            }
+            else
+            {
+                Multihash multiHash = Multihash.Parse(currentCid, Multiformats.Base.MultibaseEncoding.Base58Btc);
+                string multiHashString = multiHash.ToString();
+                var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
+                nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
+            }
             if (verboseLogging)
             {
                 Console.WriteLine($"Generated NFT ID: {nftId}");
