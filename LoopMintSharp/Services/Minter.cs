@@ -394,12 +394,12 @@ namespace LoopMintSharp
                 {
                     if(verboseLogging)
                     {
-                        Console.WriteLine($"Can't connect to ipfs. Ipfs desktop must be installed and running on http, port 5001!");
+                        Console.WriteLine($"{ex.Message}");
                     }
                     return new MintResponseData()
                     {
                         metadataCid = currentCid,
-                        errorMessage = "Can't connect to ipfs. Ipfs desktop must be installed and running on http, port 5001!",
+                        errorMessage = $"{ex.Message}",
                         status = "Mint failed"
                     };
                 }
