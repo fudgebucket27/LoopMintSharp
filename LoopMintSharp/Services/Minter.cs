@@ -1,5 +1,6 @@
 ﻿using JsonFlatten;
 using Multiformats.Hash;
+using Multiformats.Base;
 using Nethereum.Signer.EIP712;
 using Nethereum.Signer;
 using Nethereum.Util;
@@ -10,6 +11,8 @@ using System.Numerics;
 using LoopDropSharp;
 using Type = LoopDropSharp.Type;
 using LoopMintSharp.Models;
+using Ipfs;
+using Microsoft.VisualBasic;
 
 namespace LoopMintSharp
 {
@@ -152,10 +155,37 @@ namespace LoopMintSharp
             #region Generate Eddsa Signature
 
             //Generate the nft id here
-            Multihash multiHash = Multihash.Parse(currentCid, Multiformats.Base.MultibaseEncoding.Base58Btc);
-            string multiHashString = multiHash.ToString();
-            var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
-            var nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
+            string nftId = "";
+            if(currentCid.StartsWith('b'))
+            {
+                string cidv1 = "bafkreifhfybq6gfipdlw4py4cqt46obhs4vp4r6q6tpt5hu3km7nmbqhl4";
+                byte[] cidv1Bytes = Base32.Decode(cidv1); // decode the base32-encoded CIDv1
+                byte[] cidv0Bytes = new byte[cidv1Bytes.Length - 2]; // allocate a byte array for the CIDv0
+                Array.Copy(cidv1Bytes, 2, cidv0Bytes, 0, cidv0Bytes.Length); // copy the multihash bytes
+                cidv0Bytes[0] = 0x12; // set the CID version to 0
+                cidv0Bytes[1] = 0x20; // set the multihash type to SHA2-256
+                string cidv0 = Base58.Encode(cidv0Bytes); // encode the CIDv0 using base58
+
+                string expectedPrefix = "Qm";
+                if (cidv0.StartsWith(expectedPrefix))
+                {
+                    Console.WriteLine("CIDv0 conversion successful: {0}", cidv0);
+                }
+                else
+                {
+                    Console.WriteLine("CIDv0 conversion failed.");
+                }
+            }
+            else
+            {
+                Multihash multiHash = Multihash.Parse(currentCid, Multiformats.Base.MultibaseEncoding.Base58Btc);
+                string multiHashString = multiHash.ToString();
+                var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
+                nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
+            }
+
+            Console.WriteLine(nftId);
+             
             if (verboseLogging)
             {
                 Console.WriteLine($"Generated NFT ID: {nftId}");
