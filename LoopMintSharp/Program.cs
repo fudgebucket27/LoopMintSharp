@@ -15,6 +15,8 @@ if (args.Length == 0)
     Console.WriteLine("eg: LoopMintSharp -legacymintcollection");
     Console.WriteLine("When using -mintcollection pass it the collection contract address as well:");
     Console.WriteLine("eg: LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd");
+    Console.WriteLine("You can also mint red packet nfts with the following command:");
+    Console.WriteLine("LoopMintSharp -mintredpacketnft");
     System.Environment.Exit(0);
 }
 
@@ -442,5 +444,6 @@ else
     Console.WriteLine("When using -mintcollection pass it the collection contract address as well:");
     Console.WriteLine("eg: LoopMintSharp -mintcollection 0x1ad897a7957561dc502a19b38e7e5a3b045375bd");
     Console.WriteLine("When using -mintcollection pass it the collection contract address as well:");
+    Console.WriteLine("You can also mint red packet nfts with the following command:");
     Console.WriteLine("LoopMintSharp -mintredpacketnft");
 }
