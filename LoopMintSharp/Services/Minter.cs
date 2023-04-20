@@ -196,22 +196,35 @@ namespace LoopMintSharp
                 {
                     if (verboseLogging)
                     {
-                        Console.WriteLine($"Can't connect to ipfs. Ipfs desktop must be installed and running on http, port 5001!");
+                        Console.WriteLine($"{ex.Message}");
                     }
                     return new MintResponseData()
                     {
                         metadataCid = currentCid,
-                        errorMessage = "Can't connect to ipfs. Ipfs desktop must be installed and running on http, port 5001!",
+                        errorMessage = $"{ex.Message}",
                         status = "Mint failed"
                     };
                 }
             }
-            else
+            else if(currentCid.StartsWith("Qm"))
             {
                 Multihash multiHash = Multihash.Parse(currentCid, Multiformats.Base.MultibaseEncoding.Base58Btc);
                 string multiHashString = multiHash.ToString();
                 var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
                 nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
+            }
+            else
+            {
+                if (verboseLogging)
+                {
+                    Console.WriteLine($"Not a valid CID, must begin with b or Qm");
+                }
+                return new MintResponseData()
+                {
+                    metadataCid = currentCid,
+                    errorMessage = "Not a valid CID, must begin with b or Qm",
+                    status = "Mint failed"
+                };
             }
 
             if (verboseLogging)
@@ -391,12 +404,25 @@ namespace LoopMintSharp
                     };
                 }
             }
-            else
+            else if (currentCid.StartsWith("Qm"))
             {
                 Multihash multiHash = Multihash.Parse(currentCid, Multiformats.Base.MultibaseEncoding.Base58Btc);
                 string multiHashString = multiHash.ToString();
                 var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
                 nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
+            }
+            else
+            {
+                if (verboseLogging)
+                {
+                    Console.WriteLine($"Not a valid CID, must begin with b or Qm");
+                }
+                return new MintResponseData()
+                {
+                    metadataCid = currentCid,
+                    errorMessage = "Not a valid CID, must begin with b or Qm",
+                    status = "Mint failed"
+                };
             }
             if (verboseLogging)
             {
