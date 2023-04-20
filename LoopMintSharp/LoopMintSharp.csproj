@@ -12,6 +12,7 @@
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="27.2.1" />
     <PackageReference Include="Ipfs.Core" Version="0.55.0" />
+    <PackageReference Include="Ipfs.Http.Client" Version="0.33.0" />
     <PackageReference Include="JsonFlatten" Version="1.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.1" />

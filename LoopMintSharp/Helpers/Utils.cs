@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,56 +30,19 @@ namespace LoopMintSharp
             stringToEncode = HttpUtility.UrlEncode(stringToEncode);
             return reg.Replace(stringToEncode, m => m.Value.ToUpperInvariant());
         }
-
-        public static string Base58Encode(string input)
+        public static IEnumerable<T> FromDelimitedJson<T>(TextReader reader, JsonSerializerSettings settings = null)
         {
-            const string BASE58_CHARS = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-            var bytes = Encoding.UTF8.GetBytes(input);
-            var sb = new StringBuilder();
-            ulong buffer = 0;
-            int bitsLeft = 0;
-            foreach (var b in bytes)
+            using (var jsonReader = new JsonTextReader(reader) { CloseInput = false, SupportMultipleContent = true })
             {
-                buffer = (buffer << 8) | b;
-                bitsLeft += 8;
-                while (bitsLeft >= 5)
-                {
-                    int index = (int)(buffer >> (bitsLeft - 5)) & 0x1f;
-                    sb.Append(BASE58_CHARS[index]);
-                    bitsLeft -= 5;
-                }
-            }
-            if (bitsLeft > 0)
-            {
-                int index = (int)(buffer << (5 - bitsLeft)) & 0x1f;
-                sb.Append(BASE58_CHARS[index]);
-            }
-            return sb.ToString();
-        }
+                var serializer = JsonSerializer.CreateDefault(settings);
 
-        public static byte[] Base58ToByteArray(string input)
-        {
-            const string BASE58_CHARS = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-            var bytes = new byte[input.Length];
-            foreach (var c in input)
-            {
-                int value = BASE58_CHARS.IndexOf(c);
-                if (value == -1)
+                while (jsonReader.Read())
                 {
-                    throw new ArgumentException("Invalid base58 string");
-                }
-                for (int i = bytes.Length - 1; i >= 0; i--)
-                {
-                    value += 58 * bytes[i];
-                    bytes[i] = (byte)(value % 256);
-                    value /= 256;
-                }
-                if (value != 0)
-                {
-                    throw new ArgumentException("Invalid base58 string");
+                    if (jsonReader.TokenType == JsonToken.Comment)
+                        continue;
+                    yield return serializer.Deserialize<T>(jsonReader);
                 }
             }
-            return bytes;
         }
     }
 }
