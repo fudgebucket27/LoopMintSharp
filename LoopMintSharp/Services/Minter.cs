@@ -158,7 +158,7 @@ namespace LoopMintSharp
             string nftId = "";
             if(currentCid.StartsWith('b'))
             {
-                string cidv1 = "bafkreifhfybq6gfipdlw4py4cqt46obhs4vp4r6q6tpt5hu3km7nmbqhl4";
+                string cidv1 = currentCid;
                 byte[] cidv1Bytes = Base32.Decode(cidv1); // decode the base32-encoded CIDv1
                 byte[] cidv0Bytes = new byte[cidv1Bytes.Length - 2]; // allocate a byte array for the CIDv0
                 Array.Copy(cidv1Bytes, 2, cidv0Bytes, 0, cidv0Bytes.Length); // copy the multihash bytes
@@ -170,6 +170,10 @@ namespace LoopMintSharp
                 if (cidv0.StartsWith(expectedPrefix))
                 {
                     Console.WriteLine("CIDv0 conversion successful: {0}", cidv0);
+                    Multihash multiHash = Multihash.Parse(cidv0, Multiformats.Base.MultibaseEncoding.Base58Btc);
+                    string multiHashString = multiHash.ToString();
+                    var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
+                    nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
                 }
                 else
                 {
