@@ -10,12 +10,15 @@ using System.Numerics;
 using LoopDropSharp;
 using Type = LoopDropSharp.Type;
 using LoopMintSharp.Models;
+using System.Runtime.CompilerServices;
 
 namespace LoopMintSharp
 {
     public class Minter
     {
         static ILoopringMintService loopringMintService = new LoopringMintService();
+
+        static HttpClient httpClient = new HttpClient();
         public async Task<OffchainFee> GetMintFee(
     string loopringApiKey,
     int accountId,
@@ -45,7 +48,7 @@ namespace LoopMintSharp
             )
         {
             //Getting the token address
-            var mintFee = await loopringMintService.GetOffChainFeeWithAmount(loopringApiKey, accountId,0, 11, tokenAddress, verboseLogging);
+            var mintFee = await loopringMintService.GetOffChainFeeWithAmount(loopringApiKey, accountId, 0, 11, tokenAddress, verboseLogging);
             if (verboseLogging)
             {
                 Console.WriteLine($"Offchain fee: {JsonConvert.SerializeObject(mintFee, Formatting.Indented)}");
@@ -152,10 +155,79 @@ namespace LoopMintSharp
             #region Generate Eddsa Signature
 
             //Generate the nft id here
-            Multihash multiHash = Multihash.Parse(currentCid, Multiformats.Base.MultibaseEncoding.Base58Btc);
-            string multiHashString = multiHash.ToString();
-            var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
-            var nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
+            string nftId = "";
+            if (currentCid.StartsWith('b'))
+            {
+                try
+                {
+                    var cidv1 = currentCid;
+                    var apiEndpoint = "http://localhost:5001/api/v0";
+                    var remoteFileUrl = $"https://loopring.mypinata.cloud/ipfs/{currentCid}";
+
+                    // Step 1: Download the remote file
+                    var response = await httpClient.GetAsync(remoteFileUrl);
+                    var fileBytes = await response.Content.ReadAsByteArrayAsync();
+
+                    // Step 2: Convert the raw bytes into a CIDv0 dag-pb file
+                    var postFileUrl = $"{apiEndpoint}/dag/put?format=dag-pb&input-enc=raw&hash=sha2-256";
+                    var fileContent = new ByteArrayContent(fileBytes);
+                    response = await httpClient.PostAsync(postFileUrl, fileContent);
+                    var cidv0 = await response.Content.ReadAsStringAsync();
+
+                    // Step 3: Upload the CIDv0 file to IPFS
+                    var addUrl = $"{apiEndpoint}/add?pin=true";
+                    var fileName = Path.GetFileName(remoteFileUrl);
+                    var formData = new MultipartFormDataContent();
+                    formData.Add(new ByteArrayContent(fileBytes), "file", fileName);
+                    formData.Add(new StringContent(cidv0), "cid-version");
+                    response = await httpClient.PostAsync(addUrl, formData);
+
+                    // Step 4: Print out the response
+                    var responseString = await response.Content.ReadAsStringAsync();
+                    responseString = "[" + responseString.Replace(" ", "").Replace("\r", "").Replace("\n", "").Replace("}{", "},{") + "]";
+
+                    var responseObject = JsonConvert.DeserializeObject<List<IpfsData>>(responseString);
+                    //Console.WriteLine($"[Debug] Converted cidv1: {responseObject[0].Name} to cidv0: {responseObject[0].Hash})");
+                    Multihash multiHash = Multihash.Parse(responseObject[0].Hash, Multiformats.Base.MultibaseEncoding.Base58Btc);
+                    string multiHashString = multiHash.ToString();
+                    var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
+                    nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
+                }
+                catch(Exception ex)
+                {
+                    if (verboseLogging)
+                    {
+                        Console.WriteLine($"{ex.Message}");
+                    }
+                    return new MintResponseData()
+                    {
+                        metadataCid = currentCid,
+                        errorMessage = $"{ex.Message}",
+                        status = "Mint failed"
+                    };
+                }
+            }
+            else if(currentCid.StartsWith("Qm"))
+            {
+                Multihash multiHash = Multihash.Parse(currentCid, Multiformats.Base.MultibaseEncoding.Base58Btc);
+                string multiHashString = multiHash.ToString();
+                var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
+                nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
+            }
+            else
+            {
+                if (verboseLogging)
+                {
+                    Console.WriteLine($"Not a valid CID, must begin with b or Qm");
+                }
+                return new MintResponseData()
+                {
+                    metadataCid = currentCid,
+                    errorMessage = "Not a valid CID, must begin with b or Qm",
+                    status = "Mint failed"
+                };
+            }
+
             if (verboseLogging)
             {
                 Console.WriteLine($"Generated NFT ID: {nftId}");
@@ -281,10 +353,78 @@ namespace LoopMintSharp
             #region Generate Eddsa Signature
 
             //Generate the nft id here
-            Multihash multiHash = Multihash.Parse(currentCid, Multiformats.Base.MultibaseEncoding.Base58Btc);
-            string multiHashString = multiHash.ToString();
-            var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
-            var nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
+            string nftId = "";
+            if (currentCid.StartsWith('b'))
+            {
+                try
+                {
+                    var cidv1 = currentCid;
+                    var apiEndpoint = "http://localhost:5001/api/v0";
+                    var remoteFileUrl = $"https://loopring.mypinata.cloud/ipfs/{currentCid}";
+
+                    // Step 1: Download the remote file
+                    var response = await httpClient.GetAsync(remoteFileUrl);
+                    var fileBytes = await response.Content.ReadAsByteArrayAsync();
+
+                    // Step 2: Convert the raw bytes into a CIDv0 dag-pb file
+                    var postFileUrl = $"{apiEndpoint}/dag/put?format=dag-pb&input-enc=raw&hash=sha2-256";
+                    var fileContent = new ByteArrayContent(fileBytes);
+                    response = await httpClient.PostAsync(postFileUrl, fileContent);
+                    var cidv0 = await response.Content.ReadAsStringAsync();
+
+                    // Step 3: Upload the CIDv0 file to IPFS
+                    var addUrl = $"{apiEndpoint}/add?pin=true";
+                    var fileName = Path.GetFileName(remoteFileUrl);
+                    var formData = new MultipartFormDataContent();
+                    formData.Add(new ByteArrayContent(fileBytes), "file", fileName);
+                    formData.Add(new StringContent(cidv0), "cid-version");
+                    response = await httpClient.PostAsync(addUrl, formData);
+
+                    // Step 4: Print out the response
+                    var responseString = await response.Content.ReadAsStringAsync();
+                    responseString = "[" + responseString.Replace(" ", "").Replace("\r", "").Replace("\n", "").Replace("}{", "},{") + "]";
+
+                    var responseObject = JsonConvert.DeserializeObject<List<IpfsData>>(responseString);
+                    //Console.WriteLine($"[Debug] Converted cidv1: {responseObject[0].Name} to cidv0: {responseObject[0].Hash})");
+                    Multihash multiHash = Multihash.Parse(responseObject[0].Hash, Multiformats.Base.MultibaseEncoding.Base58Btc);
+                    string multiHashString = multiHash.ToString();
+                    var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
+                    nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
+                }
+                catch (Exception ex)
+                {
+                    if(verboseLogging)
+                    {
+                        Console.WriteLine($"{ex.Message}");
+                    }
+                    return new MintResponseData()
+                    {
+                        metadataCid = currentCid,
+                        errorMessage = $"{ex.Message}",
+                        status = "Mint failed"
+                    };
+                }
+            }
+            else if (currentCid.StartsWith("Qm"))
+            {
+                Multihash multiHash = Multihash.Parse(currentCid, Multiformats.Base.MultibaseEncoding.Base58Btc);
+                string multiHashString = multiHash.ToString();
+                var ipfsCidBigInteger = Utils.ParseHexUnsigned(multiHashString);
+                nftId = "0x" + ipfsCidBigInteger.ToString("x").Substring(4);
+            }
+            else
+            {
+                if (verboseLogging)
+                {
+                    Console.WriteLine($"Not a valid CID, must begin with b or Qm");
+                }
+                return new MintResponseData()
+                {
+                    metadataCid = currentCid,
+                    errorMessage = "Not a valid CID, must begin with b or Qm",
+                    status = "Mint failed"
+                };
+            }
             if (verboseLogging)
             {
                 Console.WriteLine($"Generated NFT ID: {nftId}");
@@ -384,7 +524,8 @@ namespace LoopMintSharp
                  string? exchange,
                  string amountOfNftsPerPacket,
                  string amountOfPackets,
-                 bool isRandomSplit,
+                 string redPacketType,
+                 string giftAmount,
                  string memo,
                  bool verboseLogging)
         {
@@ -395,6 +536,13 @@ namespace LoopMintSharp
             var offchainFee = await loopringMintService.GetOffChainFeeWithAmount(loopringApiKey, accountId, 0, 11, nftBalance.data[0].tokenAddress, verboseLogging);
             var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, nftBalance.data[0].tokenId, verboseLogging);
 
+            bool isBlind = false;
+
+            if(redPacketType == "blind")
+            {
+                isBlind = true;
+            }
+
             //Calculate eddsa signautre
             BigInteger[] poseidonInputs =
     {
@@ -402,7 +550,7 @@ namespace LoopMintSharp
                                     (BigInteger) accountId,
                                     (BigInteger) 0,
                                     (BigInteger) nftBalance.data[0].tokenId,
-                                    BigInteger.Parse(amountOfNftsPerPacket) * BigInteger.Parse(amountOfPackets),
+                                    isBlind ? BigInteger.Parse(amountOfNftsPerPacket) : BigInteger.Parse(amountOfNftsPerPacket) * BigInteger.Parse(amountOfPackets),
                                     (BigInteger) maxFeeTokenId,
                                     BigInteger.Parse(offchainFee.fees[maxFeeTokenId].fee),
                                     Utils.ParseHexUnsigned("0x9cde4366824d9410fb2e2f885601933a926f40d7"),
@@ -455,7 +603,7 @@ namespace LoopMintSharp
                                     new MemberValue {TypeName = "address", Value = minterAddress},
                                     new MemberValue {TypeName = "address", Value = "0x9cde4366824d9410fb2e2f885601933a926f40d7"},
                                     new MemberValue {TypeName = "uint16", Value = nftBalance.data[0].tokenId},
-                                    new MemberValue {TypeName = "uint96", Value = BigInteger.Parse(amountOfNftsPerPacket) * BigInteger.Parse(amountOfPackets)},
+                                    new MemberValue {TypeName = "uint96", Value = isBlind ? BigInteger.Parse(amountOfNftsPerPacket) : BigInteger.Parse(amountOfNftsPerPacket) * BigInteger.Parse(amountOfPackets)},
                                     new MemberValue {TypeName = "uint16", Value = maxFeeTokenId},
                                     new MemberValue {TypeName = "uint96", Value = BigInteger.Parse(offchainFee.fees[maxFeeTokenId].fee)},
                                     new MemberValue {TypeName = "uint32", Value = validUntil30Days},
@@ -476,7 +624,7 @@ namespace LoopMintSharp
                     from = minterAddress,
                     to = "0x9cde4366824d9410fb2e2f885601933a926f40d7",
                     tokenID = nftBalance.data[0].tokenId,
-                    amount = (BigInteger.Parse(amountOfNftsPerPacket) * BigInteger.Parse(amountOfPackets)).ToString(),
+                    amount = isBlind ? BigInteger.Parse(amountOfNftsPerPacket).ToString() : (BigInteger.Parse(amountOfNftsPerPacket) * BigInteger.Parse(amountOfPackets)).ToString(),
                     feeTokenID = maxFeeTokenId,
                     maxFee = offchainFee.fees[maxFeeTokenId].fee,
                     validUntil = (int)validUntil30Days,
@@ -514,14 +662,23 @@ namespace LoopMintSharp
             var ecdsaSignature = serializedECDRSASignature + "0" + (int)2;
             RedPacketNft redPacketNft = new RedPacketNft();
             redPacketNft.ecdsaSignature = ecdsaSignature;
-            LuckyToken luckyToken= new LuckyToken();
+            LuckyToken luckyToken = new LuckyToken();
             luckyToken.exchange = exchange;
             luckyToken.payerAddr = minterAddress;
             luckyToken.payerId = accountId;
             luckyToken.payeeAddr = "0x9cde4366824d9410fb2e2f885601933a926f40d7";
             luckyToken.storageId = storageId.offchainId;
             luckyToken.token = nftBalance.data[0].tokenId;
-            luckyToken.amount = (int.Parse(amountOfNftsPerPacket) * int.Parse(amountOfPackets)).ToString();
+
+            if(redPacketType == "blind")
+            {
+                luckyToken.amount = amountOfNftsPerPacket;
+                redPacketNft.giftNumbers = giftAmount;
+            }
+            else
+            {
+                luckyToken.amount = (int.Parse(amountOfNftsPerPacket) * int.Parse(amountOfPackets)).ToString();
+            }
             luckyToken.feeToken = maxFeeTokenId;
             luckyToken.maxFeeAmount = offchainFee.fees[maxFeeTokenId].fee;
             luckyToken.validUntil = validUntil30Days;
@@ -534,12 +691,38 @@ namespace LoopMintSharp
             redPacketNft.numbers = amountOfPackets;
             redPacketNft.signerFlag = false;
             redPacketNft.templateId = 0;
+
+            //Change type based on packet type
+            var partitionInt = 0;
+            var modeInt = 0;
+            var scopeInt = 0;
+            if(redPacketType == "normal" || redPacketType == "random")
+            {
+                modeInt = 1;
+                scopeInt = 1;
+                if (redPacketType == "random")
+                {
+                    partitionInt = 0;
+                }
+                else if(redPacketType == "normal")
+                {
+                    partitionInt = 1;
+                }
+            }
+            else if(redPacketType == "blind")
+            {
+                partitionInt = 0;
+                modeInt = 2;
+                scopeInt = 1;
+            }
+
             redPacketNft.type = new Models.Type()
             {
-                partition = isRandomSplit == true ? 0 : 1,
-                mode = 1,
-                scope = 1
+                partition = partitionInt,
+                mode = modeInt,
+                scope = scopeInt
             };
+
             redPacketNft.validSince = validSince;
             redPacketNft.validUntil = validUntil;
             var mintResponse = await loopringMintService.MintRedPacketNft(loopringApiKey, ecdsaSignature, redPacketNft, verboseLogging);

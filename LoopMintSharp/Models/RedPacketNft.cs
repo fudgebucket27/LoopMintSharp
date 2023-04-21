@@ -26,6 +26,7 @@ namespace LoopMintSharp.Models
     public class RedPacketNft
     {
         public string ecdsaSignature { get; set; }
+        public string? giftNumbers { get; set; }
         public LuckyToken luckyToken { get; set; }
         public string memo { get; set; }
         public string nftData { get; set; }
@@ -35,6 +36,8 @@ namespace LoopMintSharp.Models
         public Type type { get; set; }
         public long validSince { get; set; }
         public long validUntil { get; set; }
+
+
     }
 
     public class Type

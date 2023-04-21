@@ -1,7 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using RestSharp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -25,6 +29,20 @@ namespace LoopMintSharp
             var reg = new Regex(@"%[a-f0-9]{2}");
             stringToEncode = HttpUtility.UrlEncode(stringToEncode);
             return reg.Replace(stringToEncode, m => m.Value.ToUpperInvariant());
+        }
+        public static IEnumerable<T> FromDelimitedJson<T>(TextReader reader, JsonSerializerSettings settings = null)
+        {
+            using (var jsonReader = new JsonTextReader(reader) { CloseInput = false, SupportMultipleContent = true })
+            {
+                var serializer = JsonSerializer.CreateDefault(settings);
+
+                while (jsonReader.Read())
+                {
+                    if (jsonReader.TokenType == JsonToken.Comment)
+                        continue;
+                    yield return serializer.Deserialize<T>(jsonReader);
+                }
+            }
         }
     }
 }
