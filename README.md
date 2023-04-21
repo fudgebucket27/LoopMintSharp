@@ -7,6 +7,9 @@ I suggest downloading one of the compiled releases.
 
 **LoopMintSharp is purely for minting NFTs on Loopring once the images and metadata have all been generated. If you want a full end to end solution for Loopring, I recommend [LooPyGen](https://github.com/sk33z3r/LooPyGen)**
 
+## IMPORTANT FOR v4 and up
+If you want to mint metadata JSONs that are cidv1(they start with 'b' not 'Qm'), you will need to install ipfs desktop locally. Ideally the source files should be hosted on nft.storage. Using nft.storage is free!
+
 # Setup 
 Download one of the compiled releases in the [Releases](https://github.com/fudgebucket27/LoopMintSharp/releases) section and unzip it into a location of your choice. You will need to edit the included appsettings.json file with your own Loopring details; ie api key, private key,address(not your ENS) and account id. You can export these out from your account via https://loopring.io . Remember to keep these values private and do not share with anyone!
 
@@ -20,6 +23,8 @@ If compiling yourself please read the section about it below.
 The following instructions in this README are for version 3 and above. For version 3 and above you can also follow the [video tutorial](https://www.youtube.com/watch?v=B6JnNo1WXyY)
 
 For version 2 and below [see this](#video-tutorial-for-version-2-and-below).
+
+
 
 ## 1. Creating a collection
 **All commands must be done in a command line window opened in the same folder as the unzipped LoopMintSharp**
