@@ -366,9 +366,9 @@ else if (args[0].Trim() == "-mintredpacketnft")
             currentLine = currentLine.Trim();
             var lineData = currentLine.Split(',');
             count++;
-            if (lineData.Length != 5)
+            if (lineData.Length != 6)
             {
-                Console.WriteLine("This line is not correct. Please supply the nftData(string),amountOfPackets(int),amountOfNftsPerPacket(int),validUntilDays(int),isRandomSplit(boolean) as a comma seperated list of values...");
+                Console.WriteLine("This line is not correct. Please supply the nftData(string),amountOfPackets(int),amountOfNftsPerPacket(int),giftNumbers(int),validUntilDays(int),packetType(can be random,normal or blind) as a comma seperated list of values...");
                 continue;
             }
             Console.WriteLine($"Attempting mint {count} out of {lineCount} Red Packet NFTs");
@@ -385,9 +385,10 @@ else if (args[0].Trim() == "-mintredpacketnft")
             }
             var amountOfPackets = lineData[1];
             var amountOfNftsPerPacket = lineData[2];
-            var validUntilDays = int.Parse(lineData[3]);
-            var isRandomSplit = bool.Parse(lineData[4]);
-            var mintResponse = await minter.MintRedPacketNft(loopringApiKey, loopringPrivateKey, layer1PrivateKey, minterAddress, accountId, nftBalance, validUntilDays, maxFeeTokenId, exchange, amountOfNftsPerPacket, amountOfPackets, isRandomSplit, memo, verboseLogging);
+            var giftAmount = lineData[3];
+            var validUntilDays = int.Parse(lineData[4]);
+            var redpacketType = lineData[5];
+            var mintResponse = await minter.MintRedPacketNft(loopringApiKey, loopringPrivateKey, layer1PrivateKey, minterAddress, accountId, nftBalance, validUntilDays, maxFeeTokenId, exchange, amountOfNftsPerPacket, amountOfPackets, redpacketType, giftAmount, memo, verboseLogging);
             mintResponses.Add(mintResponse);
             Console.SetCursorPosition(0, Console.CursorTop - 1);
             if (!string.IsNullOrEmpty(mintResponse.errorMessage))
