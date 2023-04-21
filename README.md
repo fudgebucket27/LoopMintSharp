@@ -97,11 +97,12 @@ LoopMintSharp will mint private nft red packets. Red packet nfts can be batch mi
 
 Example nftData.txt file:
 ```batch 
-0x09ad0103c3b15dcc6c7465308b4cbcf68ef8dd6c9568b0e501f90100b339e1bc,1,1,30,false
-0x17b92c6e88f09029ca125c11fa5d19e2eb028c2ef7ad351f16366f6d47d20f38,2,6,15,true
+0x2156a809c10ced71776f7d868e2e4bf87482722cf491f59ebe2e26ff42867c9e,5,2,1,7,blind
+0x2156a809c10ced71776f7d868e2e4bf87482722cf491f59ebe2e26ff42867c9e,2,1,0,7,random
+0x2156a809c10ced71776f7d868e2e4bf87482722cf491f59ebe2e26ff42867c9e,3,2,0,7,normal
 ```
 
-Each line contains a comma seperated list of values. The first value is the nftData. To collect nftData you can use maize to retrieve it: https://github.com/cobmin/Maize, otherwise if you minted with LoopMintSharp the CSV report from a previous mint will contain the nftData.The second value is the amount of red packets, the third value is the amount of nfts per red packet, the fourth value is the amount of days the red packet is valid for and the fifth value is a true/false value on whether the red packet should be randomly split amongst recievers.
+Each line contains a comma seperated list of values. The first value is the nftData. To collect nftData you can use maize to retrieve it: https://github.com/cobmin/Maize, otherwise if you minted with LoopMintSharp the CSV report from a previous mint will contain the nftData.The second value is the amount of red packets, the third value is the amount of nfts per red packet, the fourth value only applies to blind and is the random amount of nfts to give out per box leave this as 0 if not blind, the fifth value is the amount of days the red packet is valid for and the fifth value is the red packet type, it can be blind,random or normal.
 
 The total Amount of Red Packets multiplied by the Amount of Nfts per red packet can not exceed the amount of editions of an NFT you hold in your wallet. 
 
