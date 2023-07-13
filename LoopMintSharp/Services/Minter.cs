@@ -124,6 +124,11 @@ namespace LoopMintSharp
                  string royaltyAddress)
         {
             #region Get storage id, token address and offchain fee
+
+            //Change valid until
+            long futureUnixTimeSeconds = DateTimeOffset.Now.AddDays(30).ToUnixTimeSeconds();
+            validUntil = futureUnixTimeSeconds;
+
             //Getting the storage id
             var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, maxFeeTokenId, verboseLogging);
             if (verboseLogging)
@@ -328,6 +333,11 @@ namespace LoopMintSharp
                        string royaltyAddress)
         {
             #region Get storage id, token address and offchain fee
+
+            //Change valid until
+            long futureUnixTimeSeconds = DateTimeOffset.Now.AddDays(30).ToUnixTimeSeconds();
+            validUntil = futureUnixTimeSeconds;
+
             //Getting the storage id
             var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, maxFeeTokenId, verboseLogging);
             if (verboseLogging)
