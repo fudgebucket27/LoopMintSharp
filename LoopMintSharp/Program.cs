@@ -121,9 +121,10 @@ else if (args[0].Trim() == "-legacymintcollection" )
         royaltyAddress = minterAddress;
     }
 
+    var offChainFee = await minter.GetMintFee(loopringApiKey, accountId, minterAddress, nftFactory, verboseLogging, "");
     if (skipMintFeePrompt == false)
     {
-        var offChainFee = await minter.GetMintFee(loopringApiKey, accountId, minterAddress, nftFactory, verboseLogging, "");
+       ;
         var fee = offChainFee.fees[maxFeeTokenId].fee;
         double feeAmount = lineCount * Double.Parse(fee);
         if (maxFeeTokenId == 0)
@@ -162,6 +163,16 @@ else if (args[0].Trim() == "-legacymintcollection" )
     List<MintResponseData> mintResponses = new List<MintResponseData>();
     using (StreamReader sr = new StreamReader("cids.txt"))
     {
+        //Getting the token address
+        CounterFactualNftInfo counterFactualNftInfo = new CounterFactualNftInfo
+        {
+            nftOwner = minterAddress,
+            nftFactory = nftFactory,
+            nftBaseUri = ""
+        };
+        var counterFactualNft = await minter.ComputeTokenAddress(loopringApiKey, counterFactualNftInfo, verboseLogging);
+        var storageId = await minter.GetStorageIdAsync(loopringApiKey, accountId, maxFeeTokenId, verboseLogging);
+
         string currentCid;
         //currentCid will be null when the StreamReader reaches the end of file
         while ((currentCid = sr.ReadLine()) != null)
@@ -169,7 +180,7 @@ else if (args[0].Trim() == "-legacymintcollection" )
             currentCid = currentCid.Trim();
             count++;
             Console.WriteLine($"Attempting mint {count} out of {lineCount} NFTs");
-            var mintResponse = await minter.MintLegacyCollection(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactory, exchange, currentCid, verboseLogging, royaltyAddress);
+            var mintResponse = await minter.MintLegacyCollection(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactory, exchange, currentCid, verboseLogging, royaltyAddress, offChainFee, counterFactualNft, counterFactualNftInfo, storageId);
             mintResponses.Add(mintResponse);
             Console.SetCursorPosition(0, Console.CursorTop - 1);
             if (!string.IsNullOrEmpty(mintResponse.errorMessage))
@@ -180,6 +191,7 @@ else if (args[0].Trim() == "-legacymintcollection" )
             {
                 Console.WriteLine($"Mint {count} out of {lineCount} NFTs was SUCCESSFUL");
             }
+            storageId.offchainId += 2;
         }
     }
 
@@ -240,9 +252,10 @@ else if (args[0].Trim() == "-mintcollection")
         System.Environment.Exit(0);
     }
 
+    var offChainFee = await minter.GetMintFee(loopringApiKey, accountId, minterAddress, nftFactoryCollection, verboseLogging, collectionResult.collections[0].collection.baseUri);
     if (skipMintFeePrompt == false)
     {
-        var offChainFee = await minter.GetMintFee(loopringApiKey, accountId, minterAddress, nftFactoryCollection, verboseLogging, collectionResult.collections[0].collection.baseUri);
+       ;
         var fee = offChainFee.fees[maxFeeTokenId].fee;
         double feeAmount = lineCount * Double.Parse(fee);
         if (maxFeeTokenId == 0)
@@ -281,14 +294,24 @@ else if (args[0].Trim() == "-mintcollection")
     List<MintResponseData> mintResponses = new List<MintResponseData>();
     using (StreamReader sr = new StreamReader("cids.txt"))
     {
+
+        //Getting the token address
+        CounterFactualNftInfo counterFactualNftInfo = new CounterFactualNftInfo
+        {
+            nftOwner = minterAddress,
+            nftFactory = nftFactory,
+            nftBaseUri = collectionResult.collections[0].collection.baseUri
+        };
+        var storageId = await minter.GetStorageIdAsync(loopringApiKey, accountId, maxFeeTokenId, verboseLogging);
         string currentCid;
+        var offChainFeeToken = await minter.GetOffChainFeeAsync(loopringApiKey, accountId, 9, collectionResult.collections[0].collection.baseUri, verboseLogging);
         //currentCid will be null when the StreamReader reaches the end of file
         while ((currentCid = sr.ReadLine()) != null)
         {
             currentCid = currentCid.Trim();
             count++;
             Console.WriteLine($"Attempting mint {count} out of {lineCount} NFTs");
-            var mintResponse = await minter.MintCollection(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactoryCollection, exchange, currentCid, verboseLogging, collectionResult.collections[0].collection.baseUri, collectionContractAddress, royaltyAddress);
+            var mintResponse = await minter.MintCollection(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactoryCollection, exchange, currentCid, verboseLogging, collectionResult.collections[0].collection.baseUri, collectionContractAddress, royaltyAddress, offChainFeeToken, counterFactualNftInfo, storageId);
             mintResponses.Add(mintResponse);
             Console.SetCursorPosition(0, Console.CursorTop - 1);
             if (!string.IsNullOrEmpty(mintResponse.errorMessage))
@@ -299,6 +322,7 @@ else if (args[0].Trim() == "-mintcollection")
             {
                 Console.WriteLine($"Mint {count} out of {lineCount} NFTs was SUCCESSFUL");
             }
+            storageId.offchainId += 2;
         }
     }
 

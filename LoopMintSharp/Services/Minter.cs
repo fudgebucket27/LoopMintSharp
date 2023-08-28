@@ -108,6 +108,16 @@ namespace LoopMintSharp
             return await loopringMintService.FindNftCollection(loopringApiKey, limit, offset, owner, contractAddress, verboseLogging);
         }
 
+        public async Task<CounterFactualNft> ComputeTokenAddress(string loopringApiKey, CounterFactualNftInfo counterFactualNftInfo, bool verboseLogging)
+        {
+            var counterFactualNft = await loopringMintService.ComputeTokenAddress(loopringApiKey, counterFactualNftInfo, verboseLogging);
+            if (verboseLogging)
+            {
+                Console.WriteLine($"CounterFactualNFT Token Address: {JsonConvert.SerializeObject(counterFactualNft, Formatting.Indented)}");
+            }
+            return counterFactualNft;
+        }
+
         public async Task<MintResponseData> MintLegacyCollection(string loopringApiKey,
                  string loopringPrivateKey,
                  string? minterAddress,
@@ -121,7 +131,11 @@ namespace LoopMintSharp
                  string? exchange,
                  string currentCid,
                  bool verboseLogging,
-                 string royaltyAddress)
+                 string royaltyAddress,
+                 OffchainFee _offChainFee, 
+                 CounterFactualNft _counterFactualNft,
+                 CounterFactualNftInfo counterFactualNftInfo,
+                 StorageId _storageId)
         {
             #region Get storage id, token address and offchain fee
 
@@ -130,27 +144,13 @@ namespace LoopMintSharp
             validUntil = futureUnixTimeSeconds;
 
             //Getting the storage id
-            var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, maxFeeTokenId, verboseLogging);
-            if (verboseLogging)
-            {
-                Console.WriteLine($"Storage id: {JsonConvert.SerializeObject(storageId, Formatting.Indented)}");
-            }
+            var storageId = _storageId;
 
-            //Getting the token address
-            CounterFactualNftInfo counterFactualNftInfo = new CounterFactualNftInfo
-            {
-                nftOwner = minterAddress,
-                nftFactory = nftFactory,
-                nftBaseUri = ""
-            };
-            var counterFactualNft = await loopringMintService.ComputeTokenAddress(loopringApiKey, counterFactualNftInfo, verboseLogging);
-            if (verboseLogging)
-            {
-                Console.WriteLine($"CounterFactualNFT Token Address: {JsonConvert.SerializeObject(counterFactualNft, Formatting.Indented)}");
-            }
-
+            //counterfactual nft
+            var counterFactualNft = _counterFactualNft;
+        
             //Getting the offchain fee
-            var offChainFee = await loopringMintService.GetOffChainFee(loopringApiKey, accountId, 9, counterFactualNft.tokenAddress, verboseLogging);
+            var offChainFee = _offChainFee;
             if (verboseLogging)
             {
                 Console.WriteLine($"Offchain fee: {JsonConvert.SerializeObject(offChainFee, Formatting.Indented)}");
@@ -315,6 +315,26 @@ namespace LoopMintSharp
             #endregion
         }
 
+        public async Task<StorageId> GetStorageIdAsync(string loopringApiKey, int accountId, int maxFeeTokenId, bool verboseLogging)
+        {
+            var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, maxFeeTokenId, verboseLogging);
+            if (verboseLogging)
+            {
+                Console.WriteLine($"Storage id: {JsonConvert.SerializeObject(storageId, Formatting.Indented)}");
+            }
+            return storageId;
+        }
+
+        public async Task<OffchainFee> GetOffChainFeeAsync(string loopringApiKey, int accountId, int maxFeeTokenId, string tokenAddress, bool verboseLogging)
+        {
+            var offChainFee = await loopringMintService.GetOffChainFee(loopringApiKey, accountId, maxFeeTokenId, tokenAddress, verboseLogging);
+            if (verboseLogging)
+            {
+                Console.WriteLine($"Offchain fee: {JsonConvert.SerializeObject(offChainFee, Formatting.Indented)}");
+            }
+            return offChainFee;
+        }
+
         public async Task<MintResponseData> MintCollection(string loopringApiKey,
                        string loopringPrivateKey,
                        string? minterAddress,
@@ -330,7 +350,10 @@ namespace LoopMintSharp
                        bool verboseLogging,
                        string baseUri,
                        string tokenAddress,
-                       string royaltyAddress)
+                       string royaltyAddress,                 
+                       OffchainFee _offChainFee,
+                       CounterFactualNftInfo _counterFactualNftInfo,
+                       StorageId _storageId)
         {
             #region Get storage id, token address and offchain fee
 
@@ -339,21 +362,13 @@ namespace LoopMintSharp
             validUntil = futureUnixTimeSeconds;
 
             //Getting the storage id
-            var storageId = await loopringMintService.GetNextStorageId(loopringApiKey, accountId, maxFeeTokenId, verboseLogging);
-            if (verboseLogging)
-            {
-                Console.WriteLine($"Storage id: {JsonConvert.SerializeObject(storageId, Formatting.Indented)}");
-            }
+            var storageId = _storageId;
 
             //Getting the token address
-            CounterFactualNftInfo counterFactualNftInfo = new CounterFactualNftInfo
-            {
-                nftOwner = minterAddress,
-                nftFactory = nftFactory,
-                nftBaseUri = baseUri
-            };
+            CounterFactualNftInfo counterFactualNftInfo = _counterFactualNftInfo;
+
             //Getting the offchain fee
-            var offChainFee = await loopringMintService.GetOffChainFee(loopringApiKey, accountId, 9, tokenAddress, verboseLogging);
+            var offChainFee = _offChainFee;
             if (verboseLogging)
             {
                 Console.WriteLine($"Offchain fee: {JsonConvert.SerializeObject(offChainFee, Formatting.Indented)}");
