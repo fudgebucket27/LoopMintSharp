@@ -130,6 +130,7 @@ namespace LoopMintSharp
             bool verboseLogging,
             string royaltyAddress)
         {
+            Thread.Sleep(250);
             var request = new RestRequest("api/v3/nft/mint");
             request.AddHeader("x-api-key", apiKey);
             request.AlwaysMultipartFormData = true;

@@ -299,19 +299,18 @@ else if (args[0].Trim() == "-mintcollection")
         CounterFactualNftInfo counterFactualNftInfo = new CounterFactualNftInfo
         {
             nftOwner = minterAddress,
-            nftFactory = nftFactory,
+            nftFactory = nftFactoryCollection,
             nftBaseUri = collectionResult.collections[0].collection.baseUri
         };
         var storageId = await minter.GetStorageIdAsync(loopringApiKey, accountId, maxFeeTokenId, verboseLogging);
         string currentCid;
-        var offChainFeeToken = await minter.GetOffChainFeeAsync(loopringApiKey, accountId, 9, collectionResult.collections[0].collection.baseUri, verboseLogging);
         //currentCid will be null when the StreamReader reaches the end of file
         while ((currentCid = sr.ReadLine()) != null)
         {
             currentCid = currentCid.Trim();
             count++;
             Console.WriteLine($"Attempting mint {count} out of {lineCount} NFTs");
-            var mintResponse = await minter.MintCollection(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactoryCollection, exchange, currentCid, verboseLogging, collectionResult.collections[0].collection.baseUri, collectionContractAddress, royaltyAddress, offChainFeeToken, counterFactualNftInfo, storageId);
+            var mintResponse = await minter.MintCollection(loopringApiKey, loopringPrivateKey, minterAddress, accountId, nftType, nftRoyaltyPercentage, nftAmount, validUntil, maxFeeTokenId, nftFactoryCollection, exchange, currentCid, verboseLogging, collectionResult.collections[0].collection.baseUri, collectionContractAddress, royaltyAddress, offChainFee, counterFactualNftInfo, storageId);
             mintResponses.Add(mintResponse);
             Console.SetCursorPosition(0, Console.CursorTop - 1);
             if (!string.IsNullOrEmpty(mintResponse.errorMessage))
