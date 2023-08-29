@@ -21,7 +21,7 @@
     <PackageReference Include="Nethereum.Signer.EIP712" Version="4.1.1" />
     <PackageReference Include="Nethereum.Web3" Version="4.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="PoseidonSharp" Version="1.0.4-alpha" />
+    <PackageReference Include="PoseidonSharp" Version="1.0.6" />
     <PackageReference Include="RestSharp" Version="108.0.1" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
     <PackageReference Include="SkiaSharp.QrCode" Version="0.6.0" />
