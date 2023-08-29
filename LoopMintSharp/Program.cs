@@ -190,8 +190,8 @@ else if (args[0].Trim() == "-legacymintcollection" )
             else
             {
                 Console.WriteLine($"Mint {count} out of {lineCount} NFTs was SUCCESSFUL");
+                storageId.offchainId += 2;
             }
-            storageId.offchainId += 2;
         }
     }
 
@@ -320,8 +320,8 @@ else if (args[0].Trim() == "-mintcollection")
             else
             {
                 Console.WriteLine($"Mint {count} out of {lineCount} NFTs was SUCCESSFUL");
-            }
-            storageId.offchainId += 2;
+                storageId.offchainId += 2;
+            }  
         }
     }
 
