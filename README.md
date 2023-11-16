@@ -1,3 +1,4 @@
+# THIS IS NOW ARCHIVED. NO FURTHER DEVELOPMENT WILL BE MADE, USE [MAIZE](https://github.com/cobmin/Maize) INSTEAD!
 # LoopMintSharp
 Automated single/batch minting on Loopring using the API.
 
